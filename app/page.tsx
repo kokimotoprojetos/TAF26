@@ -504,7 +504,69 @@ export default function Taf26RendaPage() {
     }, 3000);
   };
 
+  // Load YouTube IFrame API script once on mount
+  useEffect(() => {
+    if ((window as any).YT || document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
 
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    tag.async = true;
+    document.body.appendChild(tag);
+
+    (window as any).onYouTubeIframeAPIReady = () => {
+      if (playerRef.current) playerRef.current.destroy();
+      playerRef.current = new (window as any).YT.Player('yt-player', {
+        videoId: currentSong.youtubeId,
+        width: '100%',
+        height: '100%',
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+        },
+        events: {
+          onReady: () => {
+            setSongProgress(0);
+            setSecondsElapsed(0);
+          },
+          onStateChange: (event: any) => {
+            const YT = (window as any).YT;
+            if (event.data === YT.PlayerState.PLAYING) {
+              setIsPlaying(true);
+            } else if (event.data === YT.PlayerState.PAUSED) {
+              setIsPlaying(false);
+            } else if (event.data === YT.PlayerState.ENDED) {
+              setIsPlaying(false);
+              setTimeout(() => {
+                setCurrentSongIndex((prev) => (prev + 1) % songs.length);
+                setSecondsElapsed(0);
+                setSongProgress(0);
+              }, 500);
+            }
+          },
+        },
+      });
+    };
+
+    return () => {
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Load new video when current song changes
+  useEffect(() => {
+    if (playerRef.current && playerRef.current.loadVideoById) {
+      playerRef.current.loadVideoById(currentSong.youtubeId);
+      playerRef.current.pauseVideo();
+      setSecondsElapsed(0);
+      setSongProgress(0);
+      setIsPlaying(false);
+    }
+  }, [currentSongIndex]);
 
   // Handle Play/Pause
   const togglePlay = () => {
