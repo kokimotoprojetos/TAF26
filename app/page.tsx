@@ -77,6 +77,280 @@ interface VIPPlan {
   icon: string;
 }
 
+
+const songs: Song[] = [
+  {
+    id: 's-1',
+    title: 'Never Gonna Give You Up',
+    artist: 'Rick Astley',
+    reward: 3.00,
+    youtubeId: 'dQw4w9WgXcQ',
+    coverUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-2',
+    title: 'Uptown Funk',
+    artist: 'Mark Ronson ft. Bruno Mars',
+    reward: 4.50,
+    youtubeId: '3JZ_D3ELwOQ',
+    coverUrl: 'https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg',
+    genre: 'Funk'
+  },
+  {
+    id: 's-3',
+    title: 'Bohemian Rhapsody',
+    artist: 'Queen',
+    reward: 2.75,
+    youtubeId: 'fJ9rUzIMcZQ',
+    coverUrl: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-4',
+    title: 'Hello',
+    artist: 'Adele',
+    reward: 3.50,
+    youtubeId: 'YQHsXMglC9A',
+    coverUrl: 'https://img.youtube.com/vi/YQHsXMglC9A/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-5',
+    title: 'Viva La Vida',
+    artist: 'Coldplay',
+    reward: 4.20,
+    youtubeId: 'K0ibBPhiaG0',
+    coverUrl: 'https://img.youtube.com/vi/K0ibBPhiaG0/hqdefault.jpg',
+    genre: 'Alternative'
+  },
+  {
+    id: 's-6',
+    title: 'Shake It Off',
+    artist: 'Taylor Swift',
+    reward: 2.90,
+    youtubeId: 'e-ORhEE9VVg',
+    coverUrl: 'https://img.youtube.com/vi/e-ORhEE9VVg/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-7',
+    title: 'Shape of You',
+    artist: 'Ed Sheeran',
+    reward: 3.80,
+    youtubeId: 'OPCtLsK3LDw',
+    coverUrl: 'https://img.youtube.com/vi/OPCtLsK3LDw/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-8',
+    title: 'Gangnam Style',
+    artist: 'PSY',
+    reward: 2.55,
+    youtubeId: '9bZkp7q19f0',
+    coverUrl: 'https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg',
+    genre: 'K-Pop'
+  },
+  {
+    id: 's-9',
+    title: 'Believer',
+    artist: 'Imagine Dragons',
+    reward: 4.00,
+    youtubeId: 'LsoLEjrDogU',
+    coverUrl: 'https://img.youtube.com/vi/LsoLEjrDogU/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-10',
+    title: 'Sugar',
+    artist: 'Maroon 5',
+    reward: 3.30,
+    youtubeId: 'VbfpW0pbvaU',
+    coverUrl: 'https://img.youtube.com/vi/VbfpW0pbvaU/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-11',
+    title: 'Despacito',
+    artist: 'Luis Fonsi ft. Daddy Yankee',
+    reward: 4.10,
+    youtubeId: '6JYIGclVQdw',
+    coverUrl: 'https://img.youtube.com/vi/6JYIGclVQdw/hqdefault.jpg',
+    genre: 'Reggaeton'
+  },
+  {
+    id: 's-12',
+    title: 'Get Lucky',
+    artist: 'Daft Punk ft. Pharrell',
+    reward: 3.70,
+    youtubeId: 'TMn5vBDNSpk',
+    coverUrl: 'https://img.youtube.com/vi/TMn5vBDNSpk/hqdefault.jpg',
+    genre: 'Funk'
+  },
+  {
+    id: 's-13',
+    title: 'All of Me',
+    artist: 'John Legend',
+    reward: 2.80,
+    youtubeId: 'O9UesCqsVJc',
+    coverUrl: 'https://img.youtube.com/vi/O9UesCqsVJc/hqdefault.jpg',
+    genre: 'Ballad'
+  },
+  {
+    id: 's-14',
+    title: 'Faded',
+    artist: 'Alan Walker',
+    reward: 3.20,
+    youtubeId: 'iXZbKYyyb3U',
+    coverUrl: 'https://img.youtube.com/vi/iXZbKYyyb3U/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-15',
+    title: 'Perfect',
+    artist: 'Ed Sheeran',
+    reward: 4.30,
+    youtubeId: 'JGwWNGJdvx8',
+    coverUrl: 'https://img.youtube.com/vi/JGwWNGJdvx8/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-16',
+    title: 'Beat It',
+    artist: 'Michael Jackson',
+    reward: 2.65,
+    youtubeId: '8UVNT4wvIGY',
+    coverUrl: 'https://img.youtube.com/vi/8UVNT4wvIGY/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-17',
+    title: 'Sunflower',
+    artist: 'Post Malone & Swae Lee',
+    reward: 3.95,
+    youtubeId: 'qslZ2et5fzc',
+    coverUrl: 'https://img.youtube.com/vi/qslZ2et5fzc/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-18',
+    title: 'Señorita',
+    artist: 'Shawn Mendes & Camila Cabello',
+    reward: 4.05,
+    youtubeId: 'Pkh8UtuejGw',
+    coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-19',
+    title: 'Blinding Lights',
+    artist: 'The Weeknd',
+    reward: 5.00,
+    youtubeId: 'e1iU2ClU6-I',
+    coverUrl: 'https://img.youtube.com/vi/e1iU2ClU6-I/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-20',
+    title: 'Levitating',
+    artist: 'Dua Lipa',
+    reward: 3.60,
+    youtubeId: 'TUVcZfQe-K8',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-21',
+    title: 'Bad Guy',
+    artist: 'Billie Eilish',
+    reward: 4.40,
+    youtubeId: 'DyDfgMOUjCI',
+    coverUrl: 'https://img.youtube.com/vi/DyDfgMOUjCI/hqdefault.jpg',
+    genre: 'Alternative'
+  },
+  {
+    id: 's-22',
+    title: 'Old Town Road',
+    artist: 'Lil Nas X',
+    reward: 2.70,
+    youtubeId: 'r7qovpFAGrQ',
+    coverUrl: 'https://img.youtube.com/vi/r7qovpFAGrQ/hqdefault.jpg',
+    genre: 'Country Rap'
+  },
+  {
+    id: 's-23',
+    title: 'Senorita',
+    artist: 'Shawn Mendes & Camila Cabello',
+    reward: 3.10,
+    youtubeId: 'Pkh8UtuejGw',
+    coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-24',
+    title: 'Roar',
+    artist: 'Katy Perry',
+    reward: 2.95,
+    youtubeId: 'CevxZvSJLk8',
+    coverUrl: 'https://img.youtube.com/vi/CevxZvSJLk8/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-25',
+    title: 'WAP',
+    artist: 'Cardi B ft. Megan Thee Stallion',
+    reward: 4.85,
+    youtubeId: 'KyaGL4KU-FI',
+    coverUrl: 'https://img.youtube.com/vi/KyaGL4KU-FI/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-26',
+    title: 'Stairway to Heaven',
+    artist: 'Led Zeppelin',
+    reward: 3.40,
+    youtubeId: 'QkF3oxziUI4',
+    coverUrl: 'https://img.youtube.com/vi/QkF3oxziUI4/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-27',
+    title: 'Smells Like Teen Spirit',
+    artist: 'Nirvana',
+    reward: 2.85,
+    youtubeId: 'hTWKbfoikeg',
+    coverUrl: 'https://img.youtube.com/vi/hTWKbfoikeg/hqdefault.jpg',
+    genre: 'Grunge'
+  },
+  {
+    id: 's-28',
+    title: 'Someone Like You',
+    artist: 'Adele',
+    reward: 4.20,
+    youtubeId: 'hLQl3WQQoQ0',
+    coverUrl: 'https://img.youtube.com/vi/hLQl3WQQoQ0/hqdefault.jpg',
+    genre: 'Ballad'
+  },
+  {
+    id: 's-29',
+    title: 'Blues Brothers',
+    artist: 'The Blues Brothers',
+    reward: 3.15,
+    youtubeId: 'gUL2U1ZVKpM',
+    coverUrl: 'https://img.youtube.com/vi/gUL2U1ZVKpM/hqdefault.jpg',
+    genre: 'Blues'
+  },
+  {
+    id: 's-30',
+    title: 'Havana',
+    artist: 'Camila Cabello',
+    reward: 3.95,
+    youtubeId: 'HCjNJDNzw8Y',
+    coverUrl: 'https://img.youtube.com/vi/HCjNJDNzw8Y/hqdefault.jpg',
+    genre: 'Pop'
+  }
+];
+
 export default function Taf26RendaPage() {
   const [user, setUser] = useState<any>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
@@ -182,278 +456,6 @@ export default function Taf26RendaPage() {
   const playerRef = useRef<any>(null);
 
   // Playlist data
-  const songs: Song[] = [
-    {
-      id: 's-1',
-      title: 'Never Gonna Give You Up',
-      artist: 'Rick Astley',
-      reward: 3.00,
-      youtubeId: 'dQw4w9WgXcQ',
-      coverUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-2',
-      title: 'Uptown Funk',
-      artist: 'Mark Ronson ft. Bruno Mars',
-      reward: 4.50,
-      youtubeId: '3JZ_D3ELwOQ',
-      coverUrl: 'https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg',
-      genre: 'Funk'
-    },
-    {
-      id: 's-3',
-      title: 'Bohemian Rhapsody',
-      artist: 'Queen',
-      reward: 2.75,
-      youtubeId: 'fJ9rUzIMcZQ',
-      coverUrl: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/hqdefault.jpg',
-      genre: 'Rock'
-    },
-    {
-      id: 's-4',
-      title: 'Hello',
-      artist: 'Adele',
-      reward: 3.50,
-      youtubeId: 'YQHsXMglC9A',
-      coverUrl: 'https://img.youtube.com/vi/YQHsXMglC9A/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-5',
-      title: 'Viva La Vida',
-      artist: 'Coldplay',
-      reward: 4.20,
-      youtubeId: 'K0ibBPhiaG0',
-      coverUrl: 'https://img.youtube.com/vi/K0ibBPhiaG0/hqdefault.jpg',
-      genre: 'Alternative'
-    },
-    {
-      id: 's-6',
-      title: 'Shake It Off',
-      artist: 'Taylor Swift',
-      reward: 2.90,
-      youtubeId: 'e-ORhEE9VVg',
-      coverUrl: 'https://img.youtube.com/vi/e-ORhEE9VVg/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-7',
-      title: 'Shape of You',
-      artist: 'Ed Sheeran',
-      reward: 3.80,
-      youtubeId: 'OPCtLsK3LDw',
-      coverUrl: 'https://img.youtube.com/vi/OPCtLsK3LDw/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-8',
-      title: 'Gangnam Style',
-      artist: 'PSY',
-      reward: 2.55,
-      youtubeId: '9bZkp7q19f0',
-      coverUrl: 'https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg',
-      genre: 'K-Pop'
-    },
-    {
-      id: 's-9',
-      title: 'Believer',
-      artist: 'Imagine Dragons',
-      reward: 4.00,
-      youtubeId: 'LsoLEjrDogU',
-      coverUrl: 'https://img.youtube.com/vi/LsoLEjrDogU/hqdefault.jpg',
-      genre: 'Rock'
-    },
-    {
-      id: 's-10',
-      title: 'Sugar',
-      artist: 'Maroon 5',
-      reward: 3.30,
-      youtubeId: 'VbfpW0pbvaU',
-      coverUrl: 'https://img.youtube.com/vi/VbfpW0pbvaU/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-11',
-      title: 'Despacito',
-      artist: 'Luis Fonsi ft. Daddy Yankee',
-      reward: 4.10,
-      youtubeId: '6JYIGclVQdw',
-      coverUrl: 'https://img.youtube.com/vi/6JYIGclVQdw/hqdefault.jpg',
-      genre: 'Reggaeton'
-    },
-    {
-      id: 's-12',
-      title: 'Get Lucky',
-      artist: 'Daft Punk ft. Pharrell',
-      reward: 3.70,
-      youtubeId: 'TMn5vBDNSpk',
-      coverUrl: 'https://img.youtube.com/vi/TMn5vBDNSpk/hqdefault.jpg',
-      genre: 'Funk'
-    },
-    {
-      id: 's-13',
-      title: 'All of Me',
-      artist: 'John Legend',
-      reward: 2.80,
-      youtubeId: 'O9UesCqsVJc',
-      coverUrl: 'https://img.youtube.com/vi/O9UesCqsVJc/hqdefault.jpg',
-      genre: 'Ballad'
-    },
-    {
-      id: 's-14',
-      title: 'Faded',
-      artist: 'Alan Walker',
-      reward: 3.20,
-      youtubeId: 'iXZbKYyyb3U',
-      coverUrl: 'https://img.youtube.com/vi/iXZbKYyyb3U/hqdefault.jpg',
-      genre: 'EDM'
-    },
-    {
-      id: 's-15',
-      title: 'Perfect',
-      artist: 'Ed Sheeran',
-      reward: 4.30,
-      youtubeId: 'JGwWNGJdvx8',
-      coverUrl: 'https://img.youtube.com/vi/JGwWNGJdvx8/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-16',
-      title: 'Beat It',
-      artist: 'Michael Jackson',
-      reward: 2.65,
-      youtubeId: '8UVNT4wvIGY',
-      coverUrl: 'https://img.youtube.com/vi/8UVNT4wvIGY/hqdefault.jpg',
-      genre: 'Rock'
-    },
-    {
-      id: 's-17',
-      title: 'Sunflower',
-      artist: 'Post Malone & Swae Lee',
-      reward: 3.95,
-      youtubeId: 'qslZ2et5fzc',
-      coverUrl: 'https://img.youtube.com/vi/qslZ2et5fzc/hqdefault.jpg',
-      genre: 'Hip Hop'
-    },
-    {
-      id: 's-18',
-      title: 'Señorita',
-      artist: 'Shawn Mendes & Camila Cabello',
-      reward: 4.05,
-      youtubeId: 'Pkh8UtuejGw',
-      coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-19',
-      title: 'Blinding Lights',
-      artist: 'The Weeknd',
-      reward: 5.00,
-      youtubeId: 'e1iU2ClU6-I',
-      coverUrl: 'https://img.youtube.com/vi/e1iU2ClU6-I/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-20',
-      title: 'Levitating',
-      artist: 'Dua Lipa',
-      reward: 3.60,
-      youtubeId: 'TUVcZfQe-K8',
-      coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-21',
-      title: 'Bad Guy',
-      artist: 'Billie Eilish',
-      reward: 4.40,
-      youtubeId: 'DyDfgMOUjCI',
-      coverUrl: 'https://img.youtube.com/vi/DyDfgMOUjCI/hqdefault.jpg',
-      genre: 'Alternative'
-    },
-    {
-      id: 's-22',
-      title: 'Old Town Road',
-      artist: 'Lil Nas X',
-      reward: 2.70,
-      youtubeId: 'r7qovpFAGrQ',
-      coverUrl: 'https://img.youtube.com/vi/r7qovpFAGrQ/hqdefault.jpg',
-      genre: 'Country Rap'
-    },
-    {
-      id: 's-23',
-      title: 'Senorita',
-      artist: 'Shawn Mendes & Camila Cabello',
-      reward: 3.10,
-      youtubeId: 'Pkh8UtuejGw',
-      coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-24',
-      title: 'Roar',
-      artist: 'Katy Perry',
-      reward: 2.95,
-      youtubeId: 'CevxZvSJLk8',
-      coverUrl: 'https://img.youtube.com/vi/CevxZvSJLk8/hqdefault.jpg',
-      genre: 'Pop'
-    },
-    {
-      id: 's-25',
-      title: 'WAP',
-      artist: 'Cardi B ft. Megan Thee Stallion',
-      reward: 4.85,
-      youtubeId: 'KyaGL4KU-FI',
-      coverUrl: 'https://img.youtube.com/vi/KyaGL4KU-FI/hqdefault.jpg',
-      genre: 'Hip Hop'
-    },
-    {
-      id: 's-26',
-      title: 'Stairway to Heaven',
-      artist: 'Led Zeppelin',
-      reward: 3.40,
-      youtubeId: 'QkF3oxziUI4',
-      coverUrl: 'https://img.youtube.com/vi/QkF3oxziUI4/hqdefault.jpg',
-      genre: 'Rock'
-    },
-    {
-      id: 's-27',
-      title: 'Smells Like Teen Spirit',
-      artist: 'Nirvana',
-      reward: 2.85,
-      youtubeId: 'hTWKbfoikeg',
-      coverUrl: 'https://img.youtube.com/vi/hTWKbfoikeg/hqdefault.jpg',
-      genre: 'Grunge'
-    },
-    {
-      id: 's-28',
-      title: 'Someone Like You',
-      artist: 'Adele',
-      reward: 4.20,
-      youtubeId: 'hLQl3WQQoQ0',
-      coverUrl: 'https://img.youtube.com/vi/hLQl3WQQoQ0/hqdefault.jpg',
-      genre: 'Ballad'
-    },
-    {
-      id: 's-29',
-      title: 'Blues Brothers',
-      artist: 'The Blues Brothers',
-      reward: 3.15,
-      youtubeId: 'gUL2U1ZVKpM',
-      coverUrl: 'https://img.youtube.com/vi/gUL2U1ZVKpM/hqdefault.jpg',
-      genre: 'Blues'
-    },
-    {
-      id: 's-30',
-      title: 'Havana',
-      artist: 'Camila Cabello',
-      reward: 3.95,
-      youtubeId: 'HCjNJDNzw8Y',
-      coverUrl: 'https://img.youtube.com/vi/HCjNJDNzw8Y/hqdefault.jpg',
-      genre: 'Pop'
-    }
-  ];
 
   const currentSong = dailyVideos[currentDaySongIndex] || songs[0];
 
@@ -600,6 +602,15 @@ export default function Taf26RendaPage() {
     }
     setIsMuted(!isMuted);
     showToast(!isMuted ? 'Áudio mutado' : 'Áudio ativado', 'info');
+  };
+
+  // Handle next video transition
+  const handleNextVideo = () => {
+    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+    setSecondsElapsed(0);
+    setSongProgress(0);
+    setRewarded(false);
+    showToast('Próxima música da playlist iniciada!', 'success');
   };
 
   // Real-time ticking logic
