@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import QRCode from 'qrcode';
 
 const IRONPAY_API = process.env.IRONPAY_API_URL || 'https://api.ironpayapp.com.br/api/public/v1';
 const TOKEN = process.env.IRONPAY_API_TOKEN || '4O63OTh1YMYiOtABqOHdNSVjEoFw7sFvARqlNP9ZkFZalo8vf2D5yHrM1il4';
@@ -78,11 +79,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: data.message || 'Erro ao criar transação' }, { status: 500 });
     }
 
+    const pixCode = data.pix?.pix_qr_code || null;
+
+    // Generate QR code image as base64 data URL
+    let pixQrImage = null;
+    if (pixCode) {
+      try {
+        pixQrImage = await QRCode.toDataURL(pixCode, {
+          width: 300,
+          margin: 2,
+          color: { dark: '#000000', light: '#FFFFFF' },
+        });
+      } catch (qrErr) {
+        console.error('QR code generation error:', qrErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       transaction: data,
-      pixQrCode: data.pix?.pix_qr_code || null,
-      pixUrl: data.pix?.pix_url || null,
+      pixCode,
+      pixQrImage,
       transactionHash: data.hash,
     });
   } catch (err) {

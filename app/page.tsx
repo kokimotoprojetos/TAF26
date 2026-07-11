@@ -4901,7 +4901,8 @@ export default function Taf26RendaPage() {
   const [isVipPaymentOpen, setIsVipPaymentOpen] = useState(false);
   const [vipPaymentData, setVipPaymentData] = useState<{
     plan: VIPPlan;
-    pixQrCode: string;
+    pixCode: string;
+    pixQrImage: string | null;
     transactionHash: string;
   } | null>(null);
   const [vipPaymentStep, setVipPaymentStep] = useState<'creating' | 'qr' | 'polling' | 'success' | 'error'>('creating');
@@ -5298,7 +5299,8 @@ export default function Taf26RendaPage() {
 
       setVipPaymentData({
         plan,
-        pixQrCode: data.pixQrCode,
+        pixCode: data.pixCode,
+        pixQrImage: data.pixQrImage,
         transactionHash: data.transactionHash,
       });
       setVipPaymentStep('qr');
@@ -6818,21 +6820,27 @@ setTimeout(() => {
                       Escaneie o QR Code abaixo com seu banco para pagar <strong className="text-emerald-400">R$ {vipPaymentData.plan.price.toFixed(2)}</strong> via PIX e ativar o {vipPaymentData.plan.name}!
                     </p>
 
-                    <div className="bg-white p-3 w-48 h-48 mx-auto rounded-xl flex items-center justify-center shadow-lg">
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(vipPaymentData.pixQrCode)}`}
-                        alt="PIX QR Code"
-                        className="w-full h-full"
-                      />
-                    </div>
+                    {vipPaymentData.pixQrImage ? (
+                      <div className="bg-white p-3 w-48 h-48 mx-auto rounded-xl flex items-center justify-center shadow-lg">
+                        <img
+                          src={vipPaymentData.pixQrImage}
+                          alt="PIX QR Code"
+                          className="w-full h-full"
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-zinc-800 p-3 w-48 h-48 mx-auto rounded-xl flex items-center justify-center">
+                        <span className="text-xs text-zinc-400">QR Code indisponível</span>
+                      </div>
+                    )}
 
                     <div className="bg-black/40 border border-zinc-800 p-2 rounded-xl text-[10px] text-zinc-400 text-left font-mono truncate">
-                      {vipPaymentData.pixQrCode}
+                      {vipPaymentData.pixCode}
                     </div>
 
                     <button
                       onClick={() => {
-                        navigator.clipboard.writeText(vipPaymentData.pixQrCode);
+                        navigator.clipboard.writeText(vipPaymentData.pixCode);
                         showToast('Código PIX copiado!', 'success');
                       }}
                       className="w-full bg-zinc-800 text-white font-bold py-2 rounded-xl text-xs active:scale-95 cursor-pointer"
