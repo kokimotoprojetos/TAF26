@@ -765,8 +765,8 @@ export default function Taf26RendaPage() {
                       {vipLevel > 0 ? `VIP ${vipLevel}` : 'Conta Grátis'}
                     </span>
                   </div>
-                  <h3 className="text-base font-bold text-white mt-0.5 flex items-center gap-1.5">
-                    +55 | (11) 99824-3367
+                   <h3 className="text-base font-bold text-white mt-0.5 flex items-center gap-1.5 truncate max-w-[200px]">
+                    {user?.user_metadata?.full_name || user?.email || 'Membro TAF26'}
                   </h3>
                   <p className="text-[10px] text-zinc-500">Aproveitando ganhos instantâneos</p>
                 </div>
@@ -1438,14 +1438,14 @@ export default function Taf26RendaPage() {
             {/* Main stats profile header card */}
             <div className="bg-[#181818] border border-[#282828] p-5 rounded-2xl flex flex-col items-center text-center shadow-lg">
               <div className="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center border-2 border-[#1DB954] overflow-hidden">
-                {user?.imageUrl ? (
-                  <Image src={user.imageUrl} alt="Avatar" width={64} height={64} className="object-cover w-full h-full" />
+                {user?.user_metadata?.avatar_url ? (
+                  <img src={user.user_metadata.avatar_url} alt="Avatar" className="object-cover w-full h-full" />
                 ) : (
-                  <User className="w-8 h-8 text-[#1DB954]" />
+                  <img src="/logo.jpeg" className="object-cover w-full h-full" alt="Avatar" />
                 )}
               </div>
               <h3 className="text-base font-black text-white mt-3">
-                {user?.user_metadata?.full_name || user?.email || '+55 (11) 99824-3367'}
+                {user?.user_metadata?.full_name || user?.email || 'Membro TAF26'}
               </h3>
               <p className="text-[11px] text-zinc-500 mt-0.5">
                 ID da Conta: {user?.id ? `USR-${user.id.substring(user.id.length - 6).toUpperCase()}` : 'SPC-55248'}
