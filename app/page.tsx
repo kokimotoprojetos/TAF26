@@ -48,14 +48,6 @@ interface Song {
   duration?: number; // placeholder duration in seconds
 }
 
-interface Referral {
-  id: string;
-  name: string;
-  date: string;
-  status: 'Ativo' | 'Pendente';
-  reward: number;
-}
-
 interface Withdrawal {
   id: string;
   amount: number;
@@ -4853,7 +4845,7 @@ export default function Taf26RendaPage() {
   
   // Navigation & Tabs
   const [activeTab, setActiveTab] = useState<'player' | 'vip' | 'history'>('player');
-  const [activeFooterTab, setActiveFooterTab] = useState<'home' | 'team' | 'missions' | 'mine'>('home');
+  const [activeFooterTab, setActiveFooterTab] = useState<'home' | 'missions' | 'mine'>('home');
   
   // Music Player
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
@@ -4874,7 +4866,6 @@ export default function Taf26RendaPage() {
   // Modals & Flows
   const [isWithdrawOpen, setIsWithdrawOpen] = useState<boolean>(false);
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
-  const [isRechargeOpen, setIsRechargeOpen] = useState<boolean>(false);
   const [isSupportOpen, setIsSupportOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -4884,18 +4875,6 @@ export default function Taf26RendaPage() {
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [isWithdrawingAnimation, setIsWithdrawingAnimation] = useState<boolean>(false);
   const [withdrawStep, setWithdrawStep] = useState<number>(0); // 0: input, 1: processing, 2: success
-
-  // Referral State
-  const [referrals, setReferrals] = useState<Referral[]>([
-    { id: 'ref-1', name: 'Ana Clara Souza', date: '09/07/2026', status: 'Ativo', reward: 2.00 },
-    { id: 'ref-2', name: 'Matheus Pereira', date: '08/07/2026', status: 'Ativo', reward: 2.00 },
-  ]);
-  const [newReferralName, setNewReferralName] = useState<string>('');
-  const [copiedLink, setCopiedLink] = useState<boolean>(false);
-
-  // Deposit/Recharge State
-  const [rechargeAmount, setRechargeAmount] = useState<string>('20');
-  const [rechargeStep, setRechargeStep] = useState<number>(0); // 0: amount, 1: QR Code, 2: success
 
   // IronPay VIP Purchase State
   const [isVipPaymentOpen, setIsVipPaymentOpen] = useState(false);
@@ -5208,62 +5187,6 @@ export default function Taf26RendaPage() {
     setRewarded(false);
   }, [currentSongIndex]);
 
-  // Handle invitation simulation
-  const handleAddReferral = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newReferralName.trim()) {
-      showToast('Digite o nome do amigo!', 'error');
-      return;
-    }
-
-    const newRef: Referral = {
-      id: `ref-${Date.now()}`,
-      name: newReferralName,
-      date: new Date().toLocaleDateString('pt-BR'),
-      status: 'Ativo',
-      reward: 2.00
-    };
-
-    setReferrals([newRef, ...referrals]);
-    setBalance((prev) => prev + 2.00);
-    setTodayEarnings((prev) => prev + 2.00);
-    setTotalIncome((prev) => prev + 2.00);
-    showToast(`Parabéns! ${newReferralName} entrou. Você ganhou +R$ 2,00 via PIX!`, 'success');
-    setNewReferralName('');
-
-    // Update mission 2
-    setMissions((prevMissions) => 
-      prevMissions.map((m) => {
-        if (m.id === 'm-2' && m.progress < m.target) {
-          const newProgress = m.progress + 1;
-          const completed = newProgress >= m.target;
-          if (completed && !m.completed) {
-            setTimeout(() => {
-              showToast(`Missão de Convites Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
-              setBalance((b) => b + m.reward);
-              setTodayEarnings((t) => t + m.reward);
-            }, 1000);
-            return { ...m, progress: newProgress, completed: true };
-          }
-          return { ...m, progress: newProgress };
-        }
-        return m;
-      })
-    );
-  };
-
-  // Copy referral link
-  const copyReferralLink = () => {
-    const link = `https://taf26.site/invite?ref=user${Math.floor(1000 + Math.random() * 9000)}`;
-    navigator.clipboard.writeText(link).then(() => {
-      setCopiedLink(true);
-      showToast('Link de convite copiado para a área de transferência!', 'success');
-      setTimeout(() => setCopiedLink(false), 2000);
-    }).catch(() => {
-      showToast('Falha ao copiar link', 'error');
-    });
-  };
-
   // Handle VIP Boost Purchase via IronPay (QR code)
   const handleBuyVIP = async (plan: VIPPlan) => {
     if (vipLevel >= plan.id) {
@@ -5366,12 +5289,6 @@ export default function Taf26RendaPage() {
       return;
     }
 
-    const activeReferralsCount = referrals.filter(r => r.status === 'Ativo').length;
-    if (activeReferralsCount < 3) {
-      showToast('Requisito mínimo: Você precisa de pelo menos 3 amigos ativos cadastrados pelo seu link para poder solicitar saques.', 'error');
-      return;
-    }
-
     if (!isAppDownloaded) {
       showToast('Requisito mínimo: Você precisa baixar e instalar o nosso aplicativo oficial para liberar saques.', 'error');
       return;
@@ -5429,36 +5346,6 @@ export default function Taf26RendaPage() {
     setTimeout(() => {
       setWithdrawStep(0);
       setWithdrawAmount('');
-    }, 300);
-  };
-
-  // Handle recharge (Simulated Deposit)
-  const handleRechargeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const amount = parseFloat(rechargeAmount);
-    if (isNaN(amount) || amount <= 0) {
-      showToast('Insira um valor válido para depósito.', 'error');
-      return;
-    }
-    
-    setRechargeStep(1); // Show QR Code
-    showToast('QR Code PIX Gerado! Pague para ativar o saldo.', 'info');
-  };
-
-  // Simulate QR Code Payment detection
-  const simulatePaymentSuccess = () => {
-    const amount = parseFloat(rechargeAmount);
-    setBalance((prev) => parseFloat((prev + amount).toFixed(2)));
-    setTotalIncome((prev) => parseFloat((prev + amount).toFixed(2)));
-    setRechargeStep(2); // Success step
-    showToast(`Depósito de R$ ${amount.toFixed(2)} confirmado! Saldo creditado ⚡`, 'success');
-  };
-
-  const closeRechargeModal = () => {
-    setIsRechargeOpen(false);
-    setTimeout(() => {
-      setRechargeStep(0);
-      setRechargeAmount('20');
     }, 300);
   };
 
@@ -6064,19 +5951,6 @@ setTimeout(() => {
                       );
                     })}
                   </div>
-
-                  {/* Add simulated deposit help option */}
-                  <div className="bg-[#181818] border border-[#282828] rounded-xl p-3 flex items-center justify-between text-xs">
-                    <span className="text-zinc-400">Falta saldo para o VIP?</span>
-                    <button 
-                      id="prompt-recharge-btn"
-                      onClick={() => setIsRechargeOpen(true)}
-                      className="text-[#1DB954] hover:underline font-bold flex items-center gap-0.5 cursor-pointer"
-                    >
-                      <span>Depositar Simulado</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </button>
-                  </div>
                 </div>
               )}
 
@@ -6116,118 +5990,11 @@ setTimeout(() => {
                     )}
                   </div>
 
-                  {/* Ref earnings log */}
-                  <div>
-                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest px-1 mb-2">
-                      Histórico de Convites
-                    </h3>
-                    <div className="bg-[#181818] border border-zinc-800 rounded-xl p-3 divide-y divide-zinc-800">
-                      {referrals.map((ref) => (
-                        <div key={ref.id} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between">
-                          <div>
-                            <span className="text-xs font-bold text-white block">{ref.name}</span>
-                            <span className="text-[9px] text-zinc-500">{ref.date} • Cadastro Concluído</span>
-                          </div>
-                          <span className="text-xs font-bold text-emerald-400">
-                            + R$ {ref.reward.toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
                 </div>
               )}
 
             </div>
 
-          </div>
-        )}
-
-        {/* --- TEAM TAB (Direct referrals screen) --- */}
-        {activeFooterTab === 'team' && (
-          <div className="flex-1 p-4 space-y-4">
-            <div className="bg-gradient-to-br from-[#122319] to-[#121212] border border-[#21432f]/40 p-5 rounded-2xl shadow-xl text-center">
-              <Users className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
-              <h2 className="text-lg font-bold text-white">Sistema de Convite TAF26</h2>
-              <p className="text-xs text-zinc-300 mt-1.5 max-w-xs mx-auto">
-                Ganhe <span className="text-[#1DB954] font-bold">R$ 2,00 na hora</span> a cada amigo cadastrado no seu link de indicação! Não há limite de convites.
-              </p>
-              
-              {/* Copyable referral Link Box */}
-              <div className="mt-4 bg-black/40 border border-zinc-800 rounded-xl p-2 flex items-center justify-between gap-2">
-                <span className="text-[10px] text-zinc-400 truncate text-left flex-1 max-w-[70%]">
-                  https://taf26.site/invite?ref=user5589
-                </span>
-                <button
-                  id="copy-link-btn"
-                  onClick={copyReferralLink}
-                  className="bg-[#1DB954] text-black px-3 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
-                >
-                  {copiedLink ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  <span>{copiedLink ? 'Copiado' : 'Copiar'}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Quick Simulate Invite Tool */}
-            <div className="bg-[#181818] border border-[#282828] p-4 rounded-2xl shadow-md">
-              <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <span>Simulador de Cadastro de Convite</span>
-              </h3>
-              <p className="text-[11px] text-zinc-400 mb-3 leading-relaxed">
-                Quer testar o sistema de indicação e ver o saldo de R$ 2,00 subir instantaneamente? Simule o cadastro de um amigo agora!
-              </p>
-              <form onSubmit={handleAddReferral} className="flex gap-2">
-                <input 
-                  id="sim-ref-name-input"
-                  type="text" 
-                  value={newReferralName}
-                  onChange={(e) => setNewReferralName(e.target.value)}
-                  placeholder="Nome do amigo (ex: Pedro Souza)"
-                  className="bg-black border border-zinc-800 rounded-xl px-3 py-2 text-base sm:text-xs flex-1 text-white focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                />
-                <button
-                  id="sim-ref-submit-btn"
-                  type="submit"
-                  className="bg-emerald-500 hover:bg-emerald-400 text-black px-3.5 py-2 rounded-xl text-xs font-black flex items-center gap-1 active:scale-95 cursor-pointer"
-                >
-                  <Users className="w-3.5 h-3.5" />
-                  <span>Convidar</span>
-                </button>
-              </form>
-            </div>
-
-            {/* Invited friends stats */}
-            <div className="bg-[#181818] border border-[#282828] p-4 rounded-2xl shadow-md">
-              <div className="flex justify-between items-center pb-2.5 border-b border-zinc-800 mb-3">
-                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Meus Convidados</span>
-                <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  {referrals.length} Cadastros
-                </span>
-              </div>
-
-              <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-1">
-                {referrals.map((ref) => (
-                  <div key={ref.id} className="flex items-center justify-between bg-black/20 p-2.5 rounded-xl border border-zinc-900">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-emerald-400 font-extrabold">
-                        {ref.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-white block">{ref.name}</span>
-                        <span className="text-[9px] text-zinc-500">{ref.date}</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-emerald-400 block">+ R$ {ref.reward.toFixed(2)}</span>
-                      <span className="text-[8px] uppercase tracking-wider text-emerald-500 font-bold bg-emerald-500/10 px-1 py-0.1 rounded-md">Ativo</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         )}
 
@@ -6286,7 +6053,7 @@ setTimeout(() => {
                               setActiveTab('player');
                               showToast('Dê Play na música para começar a progredir!', 'info');
                             } else if (mission.id === 'm-2') {
-                              setActiveFooterTab('team');
+                              showToast('Convide amigos para ganhar!', 'info');
                             } else if (mission.id === 'm-3') {
                               setActiveFooterTab('home');
                               setActiveTab('vip');
@@ -6350,22 +6117,6 @@ setTimeout(() => {
                   <div>
                     <span className="font-bold text-white block">Realizar Saque PIX</span>
                     <span className="text-[10px] text-zinc-400 mt-0.5">Pagamento instantâneo via chave PIX</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500" />
-              </button>
-
-              <button 
-                onClick={() => setIsRechargeOpen(true)}
-                className="w-full p-4 flex items-center justify-between text-left hover:bg-zinc-800/30 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-yellow-500/10 text-yellow-400">
-                    <ArrowUpRight className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-white block">Simular Depósito de Teste</span>
-                    <span className="text-[10px] text-zinc-400 mt-0.5">Adicione saldo fictício para comprar VIP</span>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-zinc-500" />
@@ -6472,19 +6223,9 @@ setTimeout(() => {
                         )}
                       </div>
 
-                      {/* Rule 2: 3 referrals */}
+                      {/* Rule 2: Download App */}
                       <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
-                        <span className="text-zinc-300">2. Convidar 3 amigos ativos:</span>
-                        {referrals.filter(r => r.status === 'Ativo').length >= 3 ? (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1">✓ OK ({referrals.filter(r => r.status === 'Ativo').length}/3)</span>
-                        ) : (
-                          <span className="text-rose-400 font-bold flex items-center gap-1">✗ Convidou {referrals.filter(r => r.status === 'Ativo').length}/3</span>
-                        )}
-                      </div>
-
-                      {/* Rule 3: Download App */}
-                      <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
-                        <span className="text-zinc-300">3. Baixar o Aplicativo Oficial:</span>
+                        <span className="text-zinc-300">2. Baixar o Aplicativo Oficial:</span>
                         {isAppDownloaded ? (
                           <span className="text-emerald-400 font-bold flex items-center gap-1">✓ Instalado</span>
                         ) : (
@@ -6640,137 +6381,6 @@ setTimeout(() => {
                       className="w-full bg-white text-black py-2.5 rounded-xl text-xs font-black active:scale-95 shadow-md cursor-pointer mt-2"
                     >
                       Fechar Extrato
-                    </button>
-                  </div>
-                )}
-
-              </motion.div>
-
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* --- SIMULATED DEPOSIT/RECHARGE MODAL --- */}
-        <AnimatePresence>
-          {isRechargeOpen && (
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-end justify-center">
-              
-              <motion.div 
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                className="w-full bg-[#181818] border-t border-zinc-800 rounded-t-3xl p-5 max-w-md space-y-4"
-              >
-                <div className="flex justify-between items-center pb-2 border-b border-zinc-800">
-                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-                    <QrCode className="w-4 h-4 text-emerald-400" />
-                    <span>Recarga Simulada de Saldo</span>
-                  </h3>
-                  <button 
-                    id="close-recharge-modal-btn"
-                    onClick={closeRechargeModal} 
-                    className="p-1 hover:bg-zinc-800 rounded-full cursor-pointer text-zinc-400 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {rechargeStep === 0 && (
-                  <form onSubmit={handleRechargeSubmit} className="space-y-4">
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">
-                      Adicione saldo para conseguir ativar os planos VIP de maiores rendimentos! Escolha ou insira um valor fictício para simulação de recarga PIX.
-                    </p>
-
-                    <div className="grid grid-cols-4 gap-2">
-                      {['25', '50', '100', '150'].map((val) => (
-                        <button
-                          key={val}
-                          type="button"
-                          onClick={() => setRechargeAmount(val)}
-                          className={`py-2 rounded-xl text-xs font-bold border transition-all ${
-                            rechargeAmount === val 
-                              ? 'bg-emerald-500 text-black border-emerald-500 font-black' 
-                              : 'bg-black text-zinc-400 border-zinc-800'
-                          }`}
-                        >
-                          R$ {val}
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-bold">R$</span>
-                      <input 
-                        id="recharge-amount-input"
-                        type="number"
-                        value={rechargeAmount}
-                        onChange={(e) => setRechargeAmount(e.target.value)}
-                        placeholder="Outro valor"
-                        className="w-full bg-black border border-zinc-800 rounded-xl pl-9 pr-4 py-3 text-base sm:text-xs text-white focus:outline-none focus:border-emerald-500"
-                        required
-                      />
-                    </div>
-
-                    <button
-                      id="submit-recharge-btn"
-                      type="submit"
-                      className="w-full py-3 bg-[#1DB954] hover:bg-emerald-400 text-black rounded-xl text-xs font-black shadow-md cursor-pointer active:scale-95"
-                    >
-                      Gerar QR Code Copia e Cola
-                    </button>
-                  </form>
-                )}
-
-                {rechargeStep === 1 && (
-                  <div className="text-center space-y-4 py-2">
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">
-                      Escaneie ou clique no botão abaixo para confirmar o recebimento simulado de <strong className="text-emerald-400">R$ {parseFloat(rechargeAmount).toFixed(2)}</strong>!
-                    </p>
-
-                    <div className="bg-white p-3 w-32 h-32 mx-auto rounded-xl flex items-center justify-center shadow-lg">
-                      <QrCode className="w-28 h-28 text-black" />
-                    </div>
-
-                    <div className="bg-black/40 border border-zinc-800 p-2 rounded-xl text-[10px] text-zinc-400 text-left font-mono truncate">
-                      00020101021226870014br.gov.bcb.pix25894taf26rendatestesficticios
-                    </div>
-
-                    <div className="space-y-2">
-                      <button
-                        id="confirm-recharge-sim-btn"
-                        onClick={simulatePaymentSuccess}
-                        className="w-full bg-[#1DB954] text-black font-black py-2.5 rounded-xl text-xs active:scale-95 cursor-pointer shadow-md"
-                      >
-                        Simular Confirmação de Pagamento
-                      </button>
-                      <button
-                        id="back-recharge-btn"
-                        onClick={() => setRechargeStep(0)}
-                        className="w-full bg-zinc-800 text-white font-bold py-2 rounded-xl text-xs active:scale-95 cursor-pointer"
-                      >
-                        Mudar Valor
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {rechargeStep === 2 && (
-                  <div className="text-center space-y-4 py-4">
-                    <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto animate-bounce">
-                      <Check className="w-6 h-6 stroke-[3px]" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-white">Depósito de Teste Concluído!</h4>
-                      <p className="text-[11px] text-zinc-400 mt-1">
-                        O saldo de <strong className="text-[#1DB954]">R$ {parseFloat(rechargeAmount).toFixed(2)}</strong> já foi creditado em sua carteira. Divirta-se comprando boosters VIP!
-                      </p>
-                    </div>
-                    <button
-                      id="finish-recharge-btn"
-                      onClick={closeRechargeModal}
-                      className="w-full bg-white text-black py-2 rounded-xl text-xs font-black active:scale-95 cursor-pointer"
-                    >
-                      Voltar ao Painel
                     </button>
                   </div>
                 )}
@@ -6999,19 +6609,7 @@ setTimeout(() => {
             <span className={`text-[10px] font-bold ${activeFooterTab === 'home' ? 'text-[#1DB954]' : 'text-zinc-500'}`}>Início</span>
           </button>
 
-          {/* Tab 2: Referral (Team) */}
-          <button
-            id="footer-team-btn"
-            onClick={() => setActiveFooterTab('team')}
-            className={`flex flex-col items-center justify-center w-16 h-12 transition-all cursor-pointer ${
-              activeFooterTab === 'team' ? 'scale-105' : ''
-            }`}
-          >
-            <Users className={`w-5 h-5 mb-1 ${activeFooterTab === 'team' ? 'text-[#1DB954]' : 'text-zinc-500'}`} />
-            <span className={`text-[10px] font-bold ${activeFooterTab === 'team' ? 'text-[#1DB954]' : 'text-zinc-500'}`}>Equipe</span>
-          </button>
-
-          {/* Tab 3: Daily Missions (Blog) */}
+          {/* Tab 2: Daily Missions (Blog) */}
           <button
             id="footer-missions-btn"
             onClick={() => setActiveFooterTab('missions')}
