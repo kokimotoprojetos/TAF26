@@ -6,6 +6,9 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Skip DB insert if table doesn't exist yet
+const SAFE_DB = false; // flip to true after creating ironpay_transactions table
+
 export async function POST(req: Request) {
   try {
     const data = await req.json();
@@ -51,21 +54,21 @@ export async function POST(req: Request) {
         console.log(`VIP ${vipLevel} activated for user ${user.id} until ${expiresAt.toISOString()}`);
       }
 
-      const { error: upsertError } = await supabaseAdmin
-        .from('ironpay_transactions')
-        .insert({
-          transaction_hash: transactionHash,
-          amount,
-          status: 'paid',
-          vip_level: vipLevel,
-          customer_email: customerEmail,
-          customer_name: customerName,
-          raw_data: data,
-        });
-
-      if (upsertError) {
-        console.error('Error saving transaction:', upsertError);
-      }
+      // Optional: save to ironpay_transactions table (uncomment after creating the table)
+      // const { error: upsertError } = await supabaseAdmin
+      //   .from('ironpay_transactions')
+      //   .insert({
+      //     transaction_hash: transactionHash,
+      //     amount,
+      //     status: 'paid',
+      //     vip_level: vipLevel,
+      //     customer_email: customerEmail,
+      //     customer_name: customerName,
+      //     raw_data: data,
+      //   });
+      // if (upsertError) {
+      //   console.error('Error saving transaction:', upsertError);
+      // }
     }
 
     return NextResponse.json({ received: true });

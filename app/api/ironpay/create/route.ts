@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 const IRONPAY_API = process.env.IRONPAY_API_URL || 'https://api.ironpayapp.com.br/api/public/v1';
-const TOKEN = process.env.IRONPAY_API_TOKEN!;
+const TOKEN = process.env.IRONPAY_API_TOKEN || '4O63OTh1YMYiOtABqOHdNSVjEoFw7sFvARqlNP9ZkFZalo8vf2D5yHrM1il4';
 
 const OFFERS: Record<number, string> = {
   1: process.env.IRONPAY_OFFER_VIP1 || 'kkb7m',

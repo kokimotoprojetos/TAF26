@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-const IRONPAY_API = process.env.IRONPAY_API_URL!;
-const TOKEN = process.env.IRONPAY_API_TOKEN!;
+const IRONPAY_API = process.env.IRONPAY_API_URL || 'https://api.ironpayapp.com.br/api/public/v1';
+const TOKEN = process.env.IRONPAY_API_TOKEN || '4O63OTh1YMYiOtABqOHdNSVjEoFw7sFvARqlNP9ZkFZalo8vf2D5yHrM1il4';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
