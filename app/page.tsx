@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Play, 
+  Play, SkipForward, 
   Pause, 
   Volume2, 
   VolumeX, 
@@ -126,6 +126,12 @@ export default function Taf26RendaPage() {
 
   // Reward state for current video
   const [rewarded, setRewarded] = useState<boolean>(false);
+
+  // Day tracking: which day (1-30) and which videos completed today
+  const dayNumber = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % 30) + 1;
+  const dailyVideos: Song[] = songs.slice((dayNumber - 1) * 5, dayNumber * 5);
+  const [videoCompleted, setVideoCompleted] = useState<boolean[]>(Array(5).fill(false));
+  const currentDaySongIndex = currentSongIndex % 5;
   
   // Modals & Flows
   const [isWithdrawOpen, setIsWithdrawOpen] = useState<boolean>(false);
@@ -449,7 +455,7 @@ export default function Taf26RendaPage() {
     }
   ];
 
-  const currentSong = songs[currentSongIndex];
+  const currentSong = dailyVideos[currentDaySongIndex] || songs[0];
 
   // VIP Plans (Matches Starbucks cards logic)
   const vipPlans: VIPPlan[] = [
@@ -539,7 +545,7 @@ export default function Taf26RendaPage() {
             } else if (event.data === YT.PlayerState.ENDED) {
               setIsPlaying(false);
               setTimeout(() => {
-                setCurrentSongIndex((prev) => (prev + 1) % songs.length);
+                setCurrentSongIndex((prev) => (prev + 1) % dailyVideos.length);
                 setSecondsElapsed(0);
                 setSongProgress(0);
               }, 500);
@@ -608,7 +614,7 @@ export default function Taf26RendaPage() {
           if (nextSec >= songDuration) {
             // Next song
             setTimeout(() => {
-              setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+              setCurrentSongIndex((prevIndex) => (prevIndex + 1) % dailyVideos.length);
               setSecondsElapsed(0);
               showToast('Próxima música da playlist iniciada!', 'success');
             }, 500);
@@ -651,6 +657,13 @@ export default function Taf26RendaPage() {
       setTotalIncome((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
       setRewarded(true);
       showToast(`Recompensa de R$ ${currentSong.reward.toFixed(2)} recebida!`, 'success');
+
+      // Mark current video as completed
+      setVideoCompleted((prev) => {
+        const next = [...prev];
+        next[currentDaySongIndex] = true;
+        return next;
+      });
 
       // Increment video mission progress (m-4)
       setMissions((prevMissions) =>
@@ -1325,6 +1338,15 @@ export default function Taf26RendaPage() {
                         title={isMuted ? "Desmutar áudio" : "Mutar áudio"}
                       >
                         {isMuted ? <VolumeX className="w-5 h-5 text-rose-400" /> : <Volume2 className="w-5 h-5 text-emerald-400" />}
+                      </button>
+                      {/* Next video button (available after reward) */}
+                      <button
+                        id="player-next-btn"
+                        onClick={handleNextVideo}
+                        disabled={!rewarded}
+                        className={`ml-2 px-3 py-2 rounded-full ${!rewarded ? 'bg-gray-600 cursor-not-allowed' : 'bg-[#1DB954] hover:bg-[#1ED760]'} transition-colors text-white`}
+                      >
+                        <SkipForward className="w-5 h-5" />
                       </button>
                     </div>
 
