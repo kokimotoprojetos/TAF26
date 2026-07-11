@@ -43,8 +43,8 @@ export default function SignInPage() {
         
         {/* Header Logo */}
         <div className="text-center space-y-2">
-          <div className="w-14 h-14 rounded-full bg-[#1DB954] mx-auto flex items-center justify-center shadow-lg shadow-emerald-500/10">
-            <Headphones className="w-7 h-7 text-black" />
+          <div className="w-14 h-14 rounded-full overflow-hidden mx-auto shadow-lg shadow-emerald-500/10 flex items-center justify-center bg-black border border-zinc-800">
+            <img src="/logo.jpeg" className="w-full h-full object-cover" alt="Logo" />
           </div>
           <h1 className="text-2xl font-black tracking-tight mt-4">TAF26 RENDA</h1>
           <p className="text-xs text-zinc-400">Entre na sua conta para começar a lucrar ouvindo música</p>

@@ -644,7 +644,7 @@ export default function Taf26RendaPage() {
         {/* --- HEADER BAR (Directly from the photo design layout) --- */}
         <header className="fixed top-0 left-0 right-0 sm:absolute sm:top-0 sm:inset-x-0 z-40 bg-[#072415]/95 backdrop-blur-md px-4 py-3 flex items-center justify-between border-b border-[#143e26]">
           <div className="flex items-center gap-2 text-emerald-400 font-medium text-sm tracking-wide">
-            <Smartphone className="w-4 h-4 animate-pulse" />
+            <img src="/logo.jpeg" className="w-4 h-4 rounded-full object-cover animate-pulse" alt="Logo" />
             <span>Home | @TAF26_RENDA</span>
           </div>
           <div className="flex items-center gap-3">
@@ -751,7 +751,7 @@ export default function Taf26RendaPage() {
                 <div className="relative">
                   <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-green-300 p-0.5 shadow-md flex items-center justify-center">
                     <div className="w-full h-full rounded-full bg-[#121212] flex items-center justify-center overflow-hidden">
-                      <Headphones className="w-6 h-6 text-emerald-400" />
+                      <img src="/logo.jpeg" className="w-full h-full object-cover" alt="Avatar" />
                     </div>
                   </div>
                   {/* Active Green dot status */}
@@ -1922,8 +1922,8 @@ export default function Taf26RendaPage() {
                 {/* Chat Header */}
                 <div className="bg-[#072415] border-b border-[#143e26] p-4 flex items-center justify-between rounded-t-3xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-500 to-emerald-300 flex items-center justify-center text-black">
-                      <Headphones className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full overflow-hidden border border-emerald-500/20 bg-emerald-950/20 flex items-center justify-center">
+                      <img src="/logo.jpeg" className="w-full h-full object-cover" alt="Suporte" />
                     </div>
                     <div>
                       <h4 className="text-xs font-black text-white">Suporte TAF26 RENDA</h4>
