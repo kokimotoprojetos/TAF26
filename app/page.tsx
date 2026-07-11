@@ -41,11 +41,11 @@ interface Song {
   id: string;
   title: string;
   artist: string;
-  duration: number; // in seconds
-  earningsPerSecond: number; // in BRL
+  reward: number; // in BRL, between 2 and 5
   coverUrl: string;
   genre: string;
-  audioUrl?: string;
+  youtubeId: string;
+  duration: number; // placeholder duration in seconds
 }
 
 interface Referral {
@@ -123,6 +123,9 @@ export default function Taf26RendaPage() {
   const [songProgress, setSongProgress] = useState<number>(30); // percentage
   const [secondsElapsed, setSecondsElapsed] = useState<number>(45);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+
+  // Reward state for current video
+  const [rewarded, setRewarded] = useState<boolean>(false);
   
   // Modals & Flows
   const [isWithdrawOpen, setIsWithdrawOpen] = useState<boolean>(false);
@@ -170,49 +173,279 @@ export default function Taf26RendaPage() {
   ]);
 
   // --- AUDIO REFERENCING & ENGINE ---
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playerRef = useRef<any>(null);
 
   // Playlist data
   const songs: Song[] = [
     {
       id: 's-1',
-      title: 'Deixa a Vida Me Levar (Samba Relax)',
-      artist: 'Zeca Cantador',
-      duration: 180,
-      earningsPerSecond: 0.12,
-      coverUrl: 'https://picsum.photos/seed/samba/200/200',
-      genre: 'Samba / MPB',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+      title: 'Never Gonna Give You Up',
+      artist: 'Rick Astley',
+      reward: 3.00,
+      youtubeId: 'dQw4w9WgXcQ',
+      coverUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg',
+      genre: 'Pop'
     },
     {
       id: 's-2',
-      title: 'Lofi Coffee & Code Beats',
-      artist: 'Chillout DJ',
-      duration: 240,
-      earningsPerSecond: 0.15,
-      coverUrl: 'https://picsum.photos/seed/lofi/200/200',
-      genre: 'Lofi Hip Hop',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+      title: 'Uptown Funk',
+      artist: 'Mark Ronson ft. Bruno Mars',
+      reward: 4.50,
+      youtubeId: '3JZ_D3ELwOQ',
+      coverUrl: 'https://img.youtube.com/vi/3JZ_D3ELwOQ/hqdefault.jpg',
+      genre: 'Funk'
     },
     {
       id: 's-3',
-      title: 'Cerveja e Modão Sertanejo',
-      artist: 'Guto & Marrone',
-      duration: 210,
-      earningsPerSecond: 0.18,
-      coverUrl: 'https://picsum.photos/seed/sertanejo/200/200',
-      genre: 'Sertanejo Universitário',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+      title: 'Bohemian Rhapsody',
+      artist: 'Queen',
+      reward: 2.75,
+      youtubeId: 'fJ9rUzIMcZQ',
+      coverUrl: 'https://img.youtube.com/vi/fJ9rUzIMcZQ/hqdefault.jpg',
+      genre: 'Rock'
     },
     {
       id: 's-4',
-      title: 'Pancadão Funk Rave',
-      artist: 'MC TAF26 Cash',
-      duration: 150,
-      earningsPerSecond: 0.25,
-      coverUrl: 'https://picsum.photos/seed/funk/200/200',
-      genre: 'Funk Ostentação',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
+      title: 'Hello',
+      artist: 'Adele',
+      reward: 3.50,
+      youtubeId: 'YQHsXMglC9A',
+      coverUrl: 'https://img.youtube.com/vi/YQHsXMglC9A/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-5',
+      title: 'Viva La Vida',
+      artist: 'Coldplay',
+      reward: 4.20,
+      youtubeId: 'K0ibBPhiaG0',
+      coverUrl: 'https://img.youtube.com/vi/K0ibBPhiaG0/hqdefault.jpg',
+      genre: 'Alternative'
+    },
+    {
+      id: 's-6',
+      title: 'Shake It Off',
+      artist: 'Taylor Swift',
+      reward: 2.90,
+      youtubeId: 'e-ORhEE9VVg',
+      coverUrl: 'https://img.youtube.com/vi/e-ORhEE9VVg/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-7',
+      title: 'Shape of You',
+      artist: 'Ed Sheeran',
+      reward: 3.80,
+      youtubeId: 'OPCtLsK3LDw',
+      coverUrl: 'https://img.youtube.com/vi/OPCtLsK3LDw/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-8',
+      title: 'Gangnam Style',
+      artist: 'PSY',
+      reward: 2.55,
+      youtubeId: '9bZkp7q19f0',
+      coverUrl: 'https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg',
+      genre: 'K-Pop'
+    },
+    {
+      id: 's-9',
+      title: 'Believer',
+      artist: 'Imagine Dragons',
+      reward: 4.00,
+      youtubeId: 'LsoLEjrDogU',
+      coverUrl: 'https://img.youtube.com/vi/LsoLEjrDogU/hqdefault.jpg',
+      genre: 'Rock'
+    },
+    {
+      id: 's-10',
+      title: 'Sugar',
+      artist: 'Maroon 5',
+      reward: 3.30,
+      youtubeId: 'VbfpW0pbvaU',
+      coverUrl: 'https://img.youtube.com/vi/VbfpW0pbvaU/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-11',
+      title: 'Despacito',
+      artist: 'Luis Fonsi ft. Daddy Yankee',
+      reward: 4.10,
+      youtubeId: '6JYIGclVQdw',
+      coverUrl: 'https://img.youtube.com/vi/6JYIGclVQdw/hqdefault.jpg',
+      genre: 'Reggaeton'
+    },
+    {
+      id: 's-12',
+      title: 'Get Lucky',
+      artist: 'Daft Punk ft. Pharrell',
+      reward: 3.70,
+      youtubeId: 'TMn5vBDNSpk',
+      coverUrl: 'https://img.youtube.com/vi/TMn5vBDNSpk/hqdefault.jpg',
+      genre: 'Funk'
+    },
+    {
+      id: 's-13',
+      title: 'All of Me',
+      artist: 'John Legend',
+      reward: 2.80,
+      youtubeId: 'O9UesCqsVJc',
+      coverUrl: 'https://img.youtube.com/vi/O9UesCqsVJc/hqdefault.jpg',
+      genre: 'Ballad'
+    },
+    {
+      id: 's-14',
+      title: 'Faded',
+      artist: 'Alan Walker',
+      reward: 3.20,
+      youtubeId: 'iXZbKYyyb3U',
+      coverUrl: 'https://img.youtube.com/vi/iXZbKYyyb3U/hqdefault.jpg',
+      genre: 'EDM'
+    },
+    {
+      id: 's-15',
+      title: 'Perfect',
+      artist: 'Ed Sheeran',
+      reward: 4.30,
+      youtubeId: 'JGwWNGJdvx8',
+      coverUrl: 'https://img.youtube.com/vi/JGwWNGJdvx8/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-16',
+      title: 'Beat It',
+      artist: 'Michael Jackson',
+      reward: 2.65,
+      youtubeId: '8UVNT4wvIGY',
+      coverUrl: 'https://img.youtube.com/vi/8UVNT4wvIGY/hqdefault.jpg',
+      genre: 'Rock'
+    },
+    {
+      id: 's-17',
+      title: 'Sunflower',
+      artist: 'Post Malone & Swae Lee',
+      reward: 3.95,
+      youtubeId: 'qslZ2et5fzc',
+      coverUrl: 'https://img.youtube.com/vi/qslZ2et5fzc/hqdefault.jpg',
+      genre: 'Hip Hop'
+    },
+    {
+      id: 's-18',
+      title: 'Señorita',
+      artist: 'Shawn Mendes & Camila Cabello',
+      reward: 4.05,
+      youtubeId: 'Pkh8UtuejGw',
+      coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-19',
+      title: 'Blinding Lights',
+      artist: 'The Weeknd',
+      reward: 5.00,
+      youtubeId: 'e1iU2ClU6-I',
+      coverUrl: 'https://img.youtube.com/vi/e1iU2ClU6-I/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-20',
+      title: 'Levitating',
+      artist: 'Dua Lipa',
+      reward: 3.60,
+      youtubeId: 'TUVcZfQe-K8',
+      coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-21',
+      title: 'Bad Guy',
+      artist: 'Billie Eilish',
+      reward: 4.40,
+      youtubeId: 'DyDfgMOUjCI',
+      coverUrl: 'https://img.youtube.com/vi/DyDfgMOUjCI/hqdefault.jpg',
+      genre: 'Alternative'
+    },
+    {
+      id: 's-22',
+      title: 'Old Town Road',
+      artist: 'Lil Nas X',
+      reward: 2.70,
+      youtubeId: 'r7qovpFAGrQ',
+      coverUrl: 'https://img.youtube.com/vi/r7qovpFAGrQ/hqdefault.jpg',
+      genre: 'Country Rap'
+    },
+    {
+      id: 's-23',
+      title: 'Senorita',
+      artist: 'Shawn Mendes & Camila Cabello',
+      reward: 3.10,
+      youtubeId: 'Pkh8UtuejGw',
+      coverUrl: 'https://img.youtube.com/vi/Pkh8UtuejGw/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-24',
+      title: 'Roar',
+      artist: 'Katy Perry',
+      reward: 2.95,
+      youtubeId: 'CevxZvSJLk8',
+      coverUrl: 'https://img.youtube.com/vi/CevxZvSJLk8/hqdefault.jpg',
+      genre: 'Pop'
+    },
+    {
+      id: 's-25',
+      title: 'WAP',
+      artist: 'Cardi B ft. Megan Thee Stallion',
+      reward: 4.85,
+      youtubeId: 'KyaGL4KU-FI',
+      coverUrl: 'https://img.youtube.com/vi/KyaGL4KU-FI/hqdefault.jpg',
+      genre: 'Hip Hop'
+    },
+    {
+      id: 's-26',
+      title: 'Stairway to Heaven',
+      artist: 'Led Zeppelin',
+      reward: 3.40,
+      youtubeId: 'QkF3oxziUI4',
+      coverUrl: 'https://img.youtube.com/vi/QkF3oxziUI4/hqdefault.jpg',
+      genre: 'Rock'
+    },
+    {
+      id: 's-27',
+      title: 'Smells Like Teen Spirit',
+      artist: 'Nirvana',
+      reward: 2.85,
+      youtubeId: 'hTWKbfoikeg',
+      coverUrl: 'https://img.youtube.com/vi/hTWKbfoikeg/hqdefault.jpg',
+      genre: 'Grunge'
+    },
+    {
+      id: 's-28',
+      title: 'Someone Like You',
+      artist: 'Adele',
+      reward: 4.20,
+      youtubeId: 'hLQl3WQQoQ0',
+      coverUrl: 'https://img.youtube.com/vi/hLQl3WQQoQ0/hqdefault.jpg',
+      genre: 'Ballad'
+    },
+    {
+      id: 's-29',
+      title: 'Blues Brothers',
+      artist: 'The Blues Brothers',
+      reward: 3.15,
+      youtubeId: 'gUL2U1ZVKpM',
+      coverUrl: 'https://img.youtube.com/vi/gUL2U1ZVKpM/hqdefault.jpg',
+      genre: 'Blues'
+    },
+    {
+      id: 's-30',
+      title: 'Havana',
+      artist: 'Camila Cabello',
+      reward: 3.95,
+      youtubeId: 'HCjNJDNzw8Y',
+      coverUrl: 'https://img.youtube.com/vi/HCjNJDNzw8Y/hqdefault.jpg',
+      genre: 'Pop'
     }
   ];
 
@@ -287,29 +520,27 @@ export default function Taf26RendaPage() {
 
   // Handle Play/Pause
   const togglePlay = () => {
-    if (!audioRef.current) return;
+    if (!playerRef.current) return;
     
     if (isPlaying) {
-      audioRef.current.pause();
+      playerRef.current.pauseVideo();
       setIsPlaying(false);
-      showToast('Música pausada. Ganhos suspensos.', 'info');
+      showToast('Vídeo pausado. Ganhos suspensos.', 'info');
     } else {
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-        showToast('Música tocando! Ganhando saldo em tempo real 💸', 'success');
-      }).catch(err => {
-        // Fallback if browser blocks autoplay or network is slow
-        console.log("Audio play blocked or failed, running simulation", err);
-        setIsPlaying(true);
-        showToast('Música iniciada (Modo Simulado)! Ganhando saldo 💸', 'success');
-      });
+      playerRef.current.playVideo();
+      setIsPlaying(true);
+      showToast('Vídeo tocando! Ganhando saldo em tempo real 💸', 'success');
     }
   };
 
   // Mute toggle
   const toggleMute = () => {
-    if (audioRef.current) {
-      audioRef.current.muted = !isMuted;
+    if (playerRef.current) {
+      if (isMuted) {
+        playerRef.current.unMute();
+      } else {
+        playerRef.current.mute();
+      }
     }
     setIsMuted(!isMuted);
     showToast(!isMuted ? 'Áudio mutado' : 'Áudio ativado', 'info');
@@ -332,19 +563,36 @@ export default function Taf26RendaPage() {
             }, 500);
             return currentSong.duration;
           }
-          setSongProgress((nextSec / currentSong.duration) * 100);
+          setSongProgress(Math.min(100, (nextSec / 30) * 100));
           return nextSec;
         });
 
-        // Calculate earning based on VIP multiplier
-        const baseEarning = currentSong.earningsPerSecond;
-        const multiplier = getMultiplier();
-        const finalEarning = baseEarning * multiplier;
+         // Award reward after 30 seconds of watch if not yet rewarded
+         if (nextSec >= 30 && !rewarded) {
+           setBalance((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+           setTodayEarnings((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+           setTotalIncome((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+           setRewarded(true);
+           showToast(`Recompensa de R$ ${currentSong.reward.toFixed(2)} recebida!`, 'success');
 
-        // Update balances
-        setBalance((prev) => parseFloat((prev + finalEarning).toFixed(2)));
-        setTodayEarnings((prev) => parseFloat((prev + finalEarning).toFixed(2)));
-        setTotalIncome((prev) => parseFloat((prev + finalEarning).toFixed(2)));
+           // Increment video mission progress (m-4)
+           setMissions((prevMissions) =>
+             prevMissions.map((m) => {
+               if (m.id === 'm-4' && m.progress < m.target) {
+                 const newProgress = m.progress + 1;
+                 const completed = newProgress >= m.target;
+                 if (completed && !m.completed) {
+                   showToast(`Missão de Vídeos concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
+                   setBalance((b) => b + m.reward);
+                   setTodayEarnings((t) => t + m.reward);
+                 }
+                 return { ...m, progress: newProgress, completed };
+               }
+               return m;
+             })
+           );
+         }
+
 
         // Increment mission 1 progress
         setMissions((prevMissions) => 
@@ -368,6 +616,11 @@ export default function Taf26RendaPage() {
     }
     return () => clearInterval(interval);
   }, [isPlaying, currentSongIndex, vipLevel]);
+
+  // Reset rewarded flag on song change
+  useEffect(() => {
+    setRewarded(false);
+  }, [currentSongIndex]);
 
   // Handle invitation simulation
   const handleAddReferral = (e: React.FormEvent) => {
@@ -617,8 +870,8 @@ export default function Taf26RendaPage() {
   const handleReload = () => {
     showToast('Sincronizando saldo com os servidores da TAF26...', 'info');
     setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
+    if (playerRef.current) {
+      playerRef.current.pauseVideo();
     }
     setTimeout(() => {
       showToast('Dados atualizados com sucesso!', 'success');
@@ -939,19 +1192,8 @@ export default function Taf26RendaPage() {
 
                     {/* Album Art & Details */}
                     <div className="flex items-center gap-4 mt-4">
-                      <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-md flex-shrink-0 bg-zinc-800">
-                        {/* Album Image */}
-                        <Image 
-                          src={currentSong.coverUrl} 
-                          alt={currentSong.title}
-                          fill
-                          sizes="64px"
-                          referrerPolicy="no-referrer"
-                          className={`object-cover ${isPlaying ? 'animate-[spin_12s_linear_infinite]' : ''}`}
-                        />
-                        {/* Overlay with music icon */}
-                        <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
-                          <Headphones className="w-5 h-5 text-white/80" />
+<div className="relative w-48 h-32 sm:w-64 sm:h-36 bg-black rounded-xl overflow-hidden">
+                          <div id="yt-player" className="w-full h-full" />
                         </div>
                       </div>
 
@@ -962,8 +1204,7 @@ export default function Taf26RendaPage() {
                         {/* Earnings notification bar */}
                         <div className="flex items-center gap-1 mt-1.5 text-[11px] text-[#1db954] font-medium bg-[#1db954]/5 px-2 py-0.5 rounded-md w-fit">
                           <DollarSign className="w-3 h-3" />
-                          <span>R$ {(currentSong.earningsPerSecond * getMultiplier()).toFixed(2)}/seg</span>
-                          {vipLevel > 0 && <span className="text-[9px] text-yellow-400 font-bold ml-1">({getMultiplier()}x)</span>}
+                          <span>Recompensa: R$ {currentSong.reward.toFixed(2)} após 30s</span>
                         </div>
                       </div>
                     </div>
@@ -1075,7 +1316,7 @@ export default function Taf26RendaPage() {
 
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-bold text-emerald-400 bg-[#1db954]/10 px-2 py-1 rounded-full whitespace-nowrap">
-                              R$ {(song.earningsPerSecond * getMultiplier()).toFixed(2)}/s
+                              R$ {song.reward.toFixed(2)}
                             </span>
                             
                             <button
@@ -1088,11 +1329,11 @@ export default function Taf26RendaPage() {
                                   setSecondsElapsed(0);
                                   setSongProgress(0);
                                   setIsPlaying(true);
-                                  setTimeout(() => {
-                                    if (audioRef.current) {
-                                      audioRef.current.play().catch(e => console.log("Sound play error", e));
-                                    }
-                                  }, 100);
+setTimeout(() => {
+                                      if (playerRef.current) {
+                                        playerRef.current.playVideo();
+                                      }
+                                    }, 100);
                                   showToast(`Iniciando ${song.title}`, 'success');
                                 }
                               }}
