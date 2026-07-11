@@ -48,6 +48,14 @@ interface Song {
   duration?: number; // placeholder duration in seconds
 }
 
+interface Referral {
+  id: string;
+  name: string;
+  date: string;
+  status: 'Ativo' | 'Pendente';
+  reward: number;
+}
+
 interface Withdrawal {
   id: string;
   amount: number;
@@ -4845,7 +4853,7 @@ export default function Taf26RendaPage() {
   
   // Navigation & Tabs
   const [activeTab, setActiveTab] = useState<'player' | 'vip' | 'history'>('player');
-  const [activeFooterTab, setActiveFooterTab] = useState<'home' | 'missions' | 'mine'>('home');
+  const [activeFooterTab, setActiveFooterTab] = useState<'home' | 'team' | 'missions' | 'mine'>('home');
   
   // Music Player
   const [currentSongIndex, setCurrentSongIndex] = useState<number>(0);
@@ -4875,6 +4883,13 @@ export default function Taf26RendaPage() {
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
   const [isWithdrawingAnimation, setIsWithdrawingAnimation] = useState<boolean>(false);
   const [withdrawStep, setWithdrawStep] = useState<number>(0); // 0: input, 1: processing, 2: success
+
+  // Referral State
+  const [referrals, setReferrals] = useState<Referral[]>([
+    { id: 'ref-1', name: 'Ana Clara Souza', date: '09/07/2026', status: 'Ativo', reward: 2.00 },
+    { id: 'ref-2', name: 'Matheus Pereira', date: '08/07/2026', status: 'Ativo', reward: 2.00 },
+  ]);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // IronPay VIP Purchase State
   const [isVipPaymentOpen, setIsVipPaymentOpen] = useState(false);
@@ -5187,6 +5202,18 @@ export default function Taf26RendaPage() {
     setRewarded(false);
   }, [currentSongIndex]);
 
+  // Copy referral link
+  const copyReferralLink = () => {
+    const link = `https://taf26.site/invite?ref=user${Math.floor(1000 + Math.random() * 9000)}`;
+    navigator.clipboard.writeText(link).then(() => {
+      setCopiedLink(true);
+      showToast('Link de convite copiado para a área de transferência!', 'success');
+      setTimeout(() => setCopiedLink(false), 2000);
+    }).catch(() => {
+      showToast('Falha ao copiar link', 'error');
+    });
+  };
+
   // Handle VIP Boost Purchase via IronPay (QR code)
   const handleBuyVIP = async (plan: VIPPlan) => {
     if (vipLevel >= plan.id) {
@@ -5286,6 +5313,12 @@ export default function Taf26RendaPage() {
 
     if (amount < 20.00) {
       showToast('O valor mínimo para saques via PIX é de R$ 20,00.', 'error');
+      return;
+    }
+
+    const activeReferralsCount = referrals.filter(r => r.status === 'Ativo').length;
+    if (activeReferralsCount < 3) {
+      showToast('Requisito mínimo: Você precisa de pelo menos 3 amigos ativos cadastrados pelo seu link para poder solicitar saques.', 'error');
       return;
     }
 
@@ -5993,8 +6026,86 @@ setTimeout(() => {
                 </div>
               )}
 
+                  </div>
+
+                  {/* Ref earnings log */}
+                  <div>
+                    <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-widest px-1 mb-2">
+                      Histórico de Convites
+                    </h3>
+                    <div className="bg-[#181818] border border-zinc-800 rounded-xl p-3 divide-y divide-zinc-800">
+                      {referrals.map((ref) => (
+                        <div key={ref.id} className="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between">
+                          <div>
+                            <span className="text-xs font-bold text-white block">{ref.name}</span>
+                            <span className="text-[9px] text-zinc-500">{ref.date} • Cadastro Concluído</span>
+                          </div>
+                          <span className="text-xs font-bold text-emerald-400">
+                            + R$ {ref.reward.toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+        {/* --- TEAM TAB (Direct referrals screen) --- */}
+        {activeFooterTab === 'team' && (
+          <div className="flex-1 p-4 space-y-4">
+            <div className="bg-gradient-to-br from-[#122319] to-[#121212] border border-[#21432f]/40 p-5 rounded-2xl shadow-xl text-center">
+              <Users className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+              <h2 className="text-lg font-bold text-white">Sistema de Convite TAF26</h2>
+              <p className="text-xs text-zinc-300 mt-1.5 max-w-xs mx-auto">
+                Ganhe <span className="text-[#1DB954] font-bold">R$ 2,00 na hora</span> a cada amigo cadastrado no seu link de indicação! Não há limite de convites.
+              </p>
+              
+              {/* Copyable referral Link Box */}
+              <div className="mt-4 bg-black/40 border border-zinc-800 rounded-xl p-2 flex items-center justify-between gap-2">
+                <span className="text-[10px] text-zinc-400 truncate text-left flex-1 max-w-[70%]">
+                  https://taf26.site/invite?ref=user5589
+                </span>
+                <button
+                  id="copy-link-btn"
+                  onClick={copyReferralLink}
+                  className="bg-[#1DB954] text-black px-3 py-1.5 rounded-lg text-[10px] font-black flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
+                >
+                  {copiedLink ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedLink ? 'Copiado' : 'Copiar'}</span>
+                </button>
+              </div>
             </div>
 
+            {/* Invited friends stats */}
+            <div className="bg-[#181818] border border-[#282828] p-4 rounded-2xl shadow-md">
+              <div className="flex justify-between items-center pb-2.5 border-b border-zinc-800 mb-3">
+                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Meus Convidados</span>
+                <span className="text-xs font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                  {referrals.length} Cadastros
+                </span>
+              </div>
+
+              <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-1">
+                {referrals.map((ref) => (
+                  <div key={ref.id} className="flex items-center justify-between bg-black/20 p-2.5 rounded-xl border border-zinc-900">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-emerald-400 font-extrabold">
+                        {ref.name.substring(0, 2).toUpperCase()}
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-white block">{ref.name}</span>
+                        <span className="text-[9px] text-zinc-500">{ref.date}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-bold text-emerald-400 block">+ R$ {ref.reward.toFixed(2)}</span>
+                      <span className="text-[8px] uppercase tracking-wider text-emerald-500 font-bold bg-emerald-500/10 px-1 py-0.1 rounded-md">Ativo</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -6223,9 +6334,19 @@ setTimeout(() => {
                         )}
                       </div>
 
-                      {/* Rule 2: Download App */}
+                      {/* Rule 2: 3 referrals */}
                       <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
-                        <span className="text-zinc-300">2. Baixar o Aplicativo Oficial:</span>
+                        <span className="text-zinc-300">2. Convidar 3 amigos ativos:</span>
+                        {referrals.filter(r => r.status === 'Ativo').length >= 3 ? (
+                          <span className="text-emerald-400 font-bold flex items-center gap-1">✓ OK ({referrals.filter(r => r.status === 'Ativo').length}/3)</span>
+                        ) : (
+                          <span className="text-rose-400 font-bold flex items-center gap-1">✗ Convidou {referrals.filter(r => r.status === 'Ativo').length}/3</span>
+                        )}
+                      </div>
+
+                      {/* Rule 3: Download App */}
+                      <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
+                        <span className="text-zinc-300">3. Baixar o Aplicativo Oficial:</span>
                         {isAppDownloaded ? (
                           <span className="text-emerald-400 font-bold flex items-center gap-1">✓ Instalado</span>
                         ) : (
@@ -6609,7 +6730,19 @@ setTimeout(() => {
             <span className={`text-[10px] font-bold ${activeFooterTab === 'home' ? 'text-[#1DB954]' : 'text-zinc-500'}`}>Início</span>
           </button>
 
-          {/* Tab 2: Daily Missions (Blog) */}
+          {/* Tab 2: Referral (Team) */}
+          <button
+            id="footer-team-btn"
+            onClick={() => setActiveFooterTab('team')}
+            className={`flex flex-col items-center justify-center w-16 h-12 transition-all cursor-pointer ${
+              activeFooterTab === 'team' ? 'scale-105' : ''
+            }`}
+          >
+            <Users className={`w-5 h-5 mb-1 ${activeFooterTab === 'team' ? 'text-[#1DB954]' : 'text-zinc-500'}`} />
+            <span className={`text-[10px] font-bold ${activeFooterTab === 'team' ? 'text-[#1DB954]' : 'text-zinc-500'}`}>Equipe</span>
+          </button>
+
+          {/* Tab 3: Daily Missions (Blog) */}
           <button
             id="footer-missions-btn"
             onClick={() => setActiveFooterTab('missions')}
