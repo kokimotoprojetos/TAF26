@@ -45,7 +45,7 @@ interface Song {
   coverUrl: string;
   genre: string;
   youtubeId: string;
-  duration: number; // placeholder duration in seconds
+  duration?: number; // placeholder duration in seconds
 }
 
 interface Referral {
@@ -504,19 +504,7 @@ export default function Taf26RendaPage() {
     }, 3000);
   };
 
-  // Audio loading / setup
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      audioRef.current = new Audio(currentSong.audioUrl);
-      audioRef.current.volume = isMuted ? 0 : 0.6;
-      audioRef.current.loop = true;
-    }
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-    };
-  }, [currentSongIndex]);
+
 
   // Handle Play/Pause
   const togglePlay = () => {
@@ -554,68 +542,72 @@ export default function Taf26RendaPage() {
         // Update track progress
         setSecondsElapsed((prev) => {
           const nextSec = prev + 1;
-          if (nextSec >= currentSong.duration) {
+          const songDuration = currentSong.duration || 180;
+          if (nextSec >= songDuration) {
             // Next song
             setTimeout(() => {
               setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
               setSecondsElapsed(0);
               showToast('Próxima música da playlist iniciada!', 'success');
             }, 500);
-            return currentSong.duration;
+            return songDuration;
           }
           setSongProgress(Math.min(100, (nextSec / 30) * 100));
           return nextSec;
         });
-
-         // Award reward after 30 seconds of watch if not yet rewarded
-         if (nextSec >= 30 && !rewarded) {
-           setBalance((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
-           setTodayEarnings((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
-           setTotalIncome((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
-           setRewarded(true);
-           showToast(`Recompensa de R$ ${currentSong.reward.toFixed(2)} recebida!`, 'success');
-
-           // Increment video mission progress (m-4)
-           setMissions((prevMissions) =>
-             prevMissions.map((m) => {
-               if (m.id === 'm-4' && m.progress < m.target) {
-                 const newProgress = m.progress + 1;
-                 const completed = newProgress >= m.target;
-                 if (completed && !m.completed) {
-                   showToast(`Missão de Vídeos concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
-                   setBalance((b) => b + m.reward);
-                   setTodayEarnings((t) => t + m.reward);
-                 }
-                 return { ...m, progress: newProgress, completed };
-               }
-               return m;
-             })
-           );
-         }
-
-
-        // Increment mission 1 progress
-        setMissions((prevMissions) => 
-          prevMissions.map((m) => {
-            if (m.id === 'm-1' && m.progress < m.target) {
-              const newProgress = m.progress + 1;
-              const completed = newProgress >= m.target;
-              if (completed && !m.completed) {
-                showToast(`Missão Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
-                setBalance((b) => b + m.reward);
-                setTodayEarnings((t) => t + m.reward);
-                return { ...m, progress: newProgress, completed: true };
-              }
-              return { ...m, progress: newProgress };
-            }
-            return m;
-          })
-        );
-
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [isPlaying, currentSongIndex, vipLevel]);
+
+  // Handle rewards and mission tracking based on elapsed seconds
+  useEffect(() => {
+    if (!isPlaying || secondsElapsed === 0) return;
+
+    // Increment mission 1 progress every second
+    setMissions((prevMissions) => 
+      prevMissions.map((m) => {
+        if (m.id === 'm-1' && m.progress < m.target) {
+          const newProgress = m.progress + 1;
+          const completed = newProgress >= m.target;
+          if (completed && !m.completed) {
+            showToast(`Missão Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
+            setBalance((b) => b + m.reward);
+            setTodayEarnings((t) => t + m.reward);
+            return { ...m, progress: newProgress, completed: true };
+          }
+          return { ...m, progress: newProgress };
+        }
+        return m;
+      })
+    );
+
+    // Award reward after 30 seconds of watch if not yet rewarded
+    if (secondsElapsed >= 30 && !rewarded) {
+      setBalance((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+      setTodayEarnings((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+      setTotalIncome((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+      setRewarded(true);
+      showToast(`Recompensa de R$ ${currentSong.reward.toFixed(2)} recebida!`, 'success');
+
+      // Increment video mission progress (m-4)
+      setMissions((prevMissions) =>
+        prevMissions.map((m) => {
+          if (m.id === 'm-4' && m.progress < m.target) {
+            const newProgress = m.progress + 1;
+            const completed = newProgress >= m.target;
+            if (completed && !m.completed) {
+              showToast(`Missão de Vídeos concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
+              setBalance((b) => b + m.reward);
+              setTodayEarnings((t) => t + m.reward);
+            }
+            return { ...m, progress: newProgress, completed };
+          }
+          return m;
+        })
+      );
+    }
+  }, [secondsElapsed, isPlaying, rewarded, currentSong]);
 
   // Reset rewarded flag on song change
   useEffect(() => {
@@ -1192,10 +1184,9 @@ export default function Taf26RendaPage() {
 
                     {/* Album Art & Details */}
                     <div className="flex items-center gap-4 mt-4">
-<div className="relative w-48 h-32 sm:w-64 sm:h-36 bg-black rounded-xl overflow-hidden">
+                        <div className="relative w-48 h-32 sm:w-64 sm:h-36 bg-black rounded-xl overflow-hidden">
                           <div id="yt-player" className="w-full h-full" />
                         </div>
-                      </div>
 
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-bold text-white truncate">{currentSong.title}</h4>
@@ -1238,7 +1229,7 @@ export default function Taf26RendaPage() {
                           {Math.floor(secondsElapsed / 60)}:{(secondsElapsed % 60).toString().padStart(2, '0')}
                         </span>
                         <span>
-                          {Math.floor(currentSong.duration / 60)}:{(currentSong.duration % 60).toString().padStart(2, '0')}
+                          {Math.floor((currentSong.duration || 180) / 60)}:{((currentSong.duration || 180) % 60).toString().padStart(2, '0')}
                         </span>
                       </div>
                     </div>
