@@ -4988,15 +4988,31 @@ export default function Taf26RendaPage() {
 
   // Load YouTube IFrame API script once on mount
   useEffect(() => {
-    if ((window as any).YT || document.querySelector('script[src*="youtube.com/iframe_api"]')) return;
-
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     tag.async = true;
     document.body.appendChild(tag);
 
-    (window as any).onYouTubeIframeAPIReady = () => {
-      if (playerRef.current) playerRef.current.destroy();
+    return () => {
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Create/Recreate YouTube player when player container is available
+  useEffect(() => {
+    const createPlayer = () => {
+      const el = document.getElementById('yt-player');
+      if (!el) return false;
+      if (!(window as any).YT || !(window as any).YT.Player) return false;
+
+      if (playerRef.current && playerRef.current.destroy) {
+        playerRef.current.destroy();
+        playerRef.current = null;
+      }
+
       playerRef.current = new (window as any).YT.Player('yt-player', {
         videoId: currentSong.youtubeId,
         width: '100%',
@@ -5006,6 +5022,7 @@ export default function Taf26RendaPage() {
           controls: 1,
           modestbranding: 1,
           rel: 0,
+          origin: window.location.origin,
         },
         events: {
           onReady: () => {
@@ -5027,17 +5044,29 @@ export default function Taf26RendaPage() {
               }, 500);
             }
           },
+          onError: (event: any) => {
+            console.warn('YouTube player error:', event.data);
+            setTimeout(() => {
+              setCurrentSongIndex((prev) => (prev + 1) % dailyVideos.length);
+              setSecondsElapsed(0);
+              setSongProgress(0);
+            }, 500);
+          },
         },
       });
+      return true;
     };
 
-    return () => {
-      if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
+    const tryCreate = () => {
+      if (createPlayer()) return;
+      const check = setInterval(() => {
+        if (createPlayer()) clearInterval(check);
+      }, 200);
+      setTimeout(() => clearInterval(check), 5000);
     };
-  }, []);
+
+    tryCreate();
+  }, [activeTab]);
 
   // Load new video when current song changes
   useEffect(() => {
