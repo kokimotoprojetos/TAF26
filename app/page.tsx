@@ -4897,6 +4897,16 @@ export default function Taf26RendaPage() {
   const [rechargeAmount, setRechargeAmount] = useState<string>('20');
   const [rechargeStep, setRechargeStep] = useState<number>(0); // 0: amount, 1: QR Code, 2: success
 
+  // IronPay VIP Purchase State
+  const [isVipPaymentOpen, setIsVipPaymentOpen] = useState(false);
+  const [vipPaymentData, setVipPaymentData] = useState<{
+    plan: VIPPlan;
+    pixQrCode: string;
+    transactionHash: string;
+  } | null>(null);
+  const [vipPaymentStep, setVipPaymentStep] = useState<'creating' | 'qr' | 'polling' | 'success' | 'error'>('creating');
+  const [vipPaymentError, setVipPaymentError] = useState('');
+
   // Support Chat State
   const [supportMessages, setSupportMessages] = useState<{ sender: 'user' | 'support'; text: string; time: string }[]>([
     { sender: 'support', text: 'Olá! Sou o assistente da TAF26 RENDA. Como posso te ajudar hoje?', time: '18:51' },
@@ -5224,43 +5234,80 @@ export default function Taf26RendaPage() {
     });
   };
 
-  // Handle VIP Boost Purchase
-  const handleBuyVIP = (plan: VIPPlan) => {
+  // Handle VIP Boost Purchase via IronPay (QR code)
+  const handleBuyVIP = async (plan: VIPPlan) => {
     if (vipLevel >= plan.id) {
       showToast('Você já possui este plano VIP ou um superior ativo!', 'info');
       return;
     }
 
-    if (balance < plan.price) {
-      showToast(`Saldo insuficiente! Você precisa de R$ ${plan.price.toFixed(2)} para ativar o ${plan.name}.`, 'error');
-      // Propose recharge
-      setTimeout(() => {
-        setIsRechargeOpen(true);
-      }, 800);
+    if (!user) {
+      showToast('Faça login para comprar um plano VIP.', 'error');
       return;
     }
 
-    // Deduct balance and apply VIP
-    setBalance((prev) => parseFloat((prev - plan.price).toFixed(2)));
-    setVipLevel(plan.id);
-    showToast(`Parabéns! ${plan.name} ativado com sucesso! Multiplicador ${plan.multiplier}x Ativo ⚡`, 'success');
+    setVipPaymentStep('creating');
+    setVipPaymentError('');
+    setIsVipPaymentOpen(true);
 
-    // Update mission 3
-    setMissions((prevMissions) => 
-      prevMissions.map((m) => {
-        if (m.id === 'm-3' && m.progress < m.target) {
-          const newProgress = 1;
-          const completed = true;
-          setTimeout(() => {
-            showToast(`Missão VIP Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
-            setBalance((b) => b + m.reward);
-            setTodayEarnings((t) => t + m.reward);
-          }, 1000);
-          return { ...m, progress: newProgress, completed };
-        }
-        return m;
-      })
-    );
+    try {
+      const res = await fetch('/api/ironpay/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vipPlan: plan.id,
+          userId: user.id,
+          email: user.email,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Erro ao criar pagamento');
+      }
+
+      setVipPaymentData({
+        plan,
+        pixQrCode: data.pixQrCode,
+        transactionHash: data.transactionHash,
+      });
+      setVipPaymentStep('qr');
+
+      const txHash = data.transactionHash;
+
+      const interval = setInterval(async () => {
+        try {
+          const checkRes = await fetch(`/api/ironpay/check?hash=${txHash}`);
+          const checkData = await checkRes.json();
+          if (checkData.success && checkData.status === 'paid') {
+            clearInterval(interval);
+            setVipPaymentStep('success');
+            setVipLevel(plan.id);
+            showToast(`Parabéns! ${plan.name} ativado com sucesso! Multiplicador ${plan.multiplier}x Ativo ⚡`, 'success');
+            setMissions((prevMissions) =>
+              prevMissions.map((m) => {
+                if (m.id === 'm-3' && m.progress < m.target) {
+                  setTimeout(() => {
+                    showToast(`Missão VIP Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
+                    setBalance((b) => b + m.reward);
+                    setTodayEarnings((t) => t + m.reward);
+                  }, 1000);
+                  return { ...m, progress: 1, completed: true };
+                }
+                return m;
+              })
+            );
+          }
+        } catch { }
+      }, 5000);
+
+      setTimeout(() => clearInterval(interval), 300000);
+    } catch (err: any) {
+      setVipPaymentStep('error');
+      setVipPaymentError(err.message || 'Erro ao processar pagamento');
+      showToast(`Erro: ${err.message}`, 'error');
+    }
   };
 
   // Simulate App Download
@@ -6699,6 +6746,121 @@ setTimeout(() => {
 
               </motion.div>
 
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* --- VIP PAYMENT MODAL (IronPay PIX QR Code) --- */}
+        <AnimatePresence>
+          {isVipPaymentOpen && vipPaymentData && (
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-end justify-center">
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                className="w-full bg-[#181818] border-t border-zinc-800 rounded-t-3xl p-5 max-w-md space-y-4"
+              >
+                <div className="flex justify-between items-center pb-2 border-b border-zinc-800">
+                  <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+                    <QrCode className="w-4 h-4 text-emerald-400" />
+                    <span>Pagamento {vipPaymentData.plan.name}</span>
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setIsVipPaymentOpen(false);
+                      setVipPaymentData(null);
+                    }}
+                    className="p-1 hover:bg-zinc-800 rounded-full cursor-pointer text-zinc-400 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {vipPaymentStep === 'creating' && (
+                  <div className="text-center py-8">
+                    <div className="w-8 h-8 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin mx-auto" />
+                    <p className="text-[11px] text-zinc-400 mt-3">Gerando QR Code...</p>
+                  </div>
+                )}
+
+                {vipPaymentStep === 'qr' && (
+                  <div className="text-center space-y-4 py-2">
+                    <p className="text-[11px] text-zinc-400 leading-relaxed">
+                      Escaneie o QR Code abaixo com seu banco para pagar <strong className="text-emerald-400">R$ {vipPaymentData.plan.price.toFixed(2)}</strong> via PIX e ativar o {vipPaymentData.plan.name}!
+                    </p>
+
+                    <div className="bg-white p-3 w-48 h-48 mx-auto rounded-xl flex items-center justify-center shadow-lg">
+                      <img
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(vipPaymentData.pixQrCode)}`}
+                        alt="PIX QR Code"
+                        className="w-full h-full"
+                      />
+                    </div>
+
+                    <div className="bg-black/40 border border-zinc-800 p-2 rounded-xl text-[10px] text-zinc-400 text-left font-mono truncate">
+                      {vipPaymentData.pixQrCode}
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(vipPaymentData.pixQrCode);
+                        showToast('Código PIX copiado!', 'success');
+                      }}
+                      className="w-full bg-zinc-800 text-white font-bold py-2 rounded-xl text-xs active:scale-95 cursor-pointer"
+                    >
+                      Copiar Código PIX
+                    </button>
+
+                    <p className="text-[10px] text-zinc-500 animate-pulse">
+                      Aguardando pagamento... O VIP será ativado automaticamente.
+                    </p>
+                  </div>
+                )}
+
+                {vipPaymentStep === 'success' && (
+                  <div className="text-center space-y-4 py-4">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto animate-bounce">
+                      <Check className="w-6 h-6 stroke-[3px]" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">Pagamento Confirmado!</h4>
+                      <p className="text-[11px] text-zinc-400 mt-1">
+                        <strong className="text-[#1DB954]">{vipPaymentData.plan.name}</strong> ativado com sucesso! Multiplicador de <strong className="text-yellow-400">{vipPaymentData.plan.multiplier}x</strong> aplicado.
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsVipPaymentOpen(false);
+                        setVipPaymentData(null);
+                      }}
+                      className="w-full bg-white text-black py-2 rounded-xl text-xs font-black active:scale-95 cursor-pointer"
+                    >
+                      Voltar ao Painel
+                    </button>
+                  </div>
+                )}
+
+                {vipPaymentStep === 'error' && (
+                  <div className="text-center space-y-4 py-4">
+                    <div className="w-12 h-12 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 mx-auto">
+                      <X className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">Erro no Pagamento</h4>
+                      <p className="text-[11px] text-zinc-400 mt-1">{vipPaymentError || 'Tente novamente mais tarde.'}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsVipPaymentOpen(false);
+                        setVipPaymentData(null);
+                      }}
+                      className="w-full bg-zinc-800 text-white py-2 rounded-xl text-xs font-bold active:scale-95 cursor-pointer"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                )}
+              </motion.div>
             </div>
           )}
         </AnimatePresence>
