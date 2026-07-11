@@ -4885,10 +4885,7 @@ export default function Taf26RendaPage() {
   const [withdrawStep, setWithdrawStep] = useState<number>(0); // 0: input, 1: processing, 2: success
 
   // Referral State
-  const [referrals, setReferrals] = useState<Referral[]>([
-    { id: 'ref-1', name: 'Ana Clara Souza', date: '09/07/2026', status: 'Ativo', reward: 2.00 },
-    { id: 'ref-2', name: 'Matheus Pereira', date: '08/07/2026', status: 'Ativo', reward: 2.00 },
-  ]);
+  const [referrals, setReferrals] = useState<Referral[]>([]);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // IronPay VIP Purchase State
