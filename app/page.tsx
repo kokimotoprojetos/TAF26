@@ -348,6 +348,1086 @@ const songs: Song[] = [
     youtubeId: 'HCjNJDNzw8Y',
     coverUrl: 'https://img.youtube.com/vi/HCjNJDNzw8Y/hqdefault.jpg',
     genre: 'Pop'
+  },
+  {
+    id: 's-31',
+    title: 'Baby',
+    artist: 'Justin Bieber ft. Ludacris',
+    reward: 4.70,
+    youtubeId: 'kffacxfA7G4',
+    coverUrl: 'https://img.youtube.com/vi/kffacxfA7G4/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-32',
+    title: 'See You Again',
+    artist: 'Wiz Khalifa ft. Charlie Puth',
+    reward: 5.00,
+    youtubeId: 'RgKAFK5djSk',
+    coverUrl: 'https://img.youtube.com/vi/RgKAFK5djSk/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-33',
+    title: 'Sorry',
+    artist: 'Justin Bieber',
+    reward: 4.50,
+    youtubeId: 'fRh_vgB2dMA',
+    coverUrl: 'https://img.youtube.com/vi/fRh_vgB2dMA/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-34',
+    title: 'Thinking Out Loud',
+    artist: 'Ed Sheeran',
+    reward: 3.80,
+    youtubeId: 'lp-EO5I60KA',
+    coverUrl: 'https://img.youtube.com/vi/lp-EO5I60KA/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-35',
+    title: 'Counting Stars',
+    artist: 'OneRepublic',
+    reward: 4.20,
+    youtubeId: 'ktvTqknDobU',
+    coverUrl: 'https://img.youtube.com/vi/ktvTqknDobU/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-36',
+    title: 'One Dance',
+    artist: 'Drake ft. Wizkid & Kyla',
+    reward: 4.90,
+    youtubeId: 'hT_nvWreIhg',
+    coverUrl: 'https://img.youtube.com/vi/hT_nvWreIhg/hqdefault.jpg',
+    genre: 'Dancehall'
+  },
+  {
+    id: 's-37',
+    title: 'Baby Shark',
+    artist: 'Pinkfong',
+    reward: 2.50,
+    youtubeId: 'XqZsoesa55w',
+    coverUrl: 'https://img.youtube.com/vi/XqZsoesa55w/hqdefault.jpg',
+    genre: 'Children'
+  },
+  {
+    id: 's-38',
+    title: 'Somebody That I Used to Know',
+    artist: 'Gotye ft. Kimbra',
+    reward: 3.60,
+    youtubeId: 'RBumgq5yVrA',
+    coverUrl: 'https://img.youtube.com/vi/RBumgq5yVrA/hqdefault.jpg',
+    genre: 'Indie'
+  },
+  {
+    id: 's-39',
+    title: 'Cheap Thrills',
+    artist: 'Sia ft. Sean Paul',
+    reward: 3.90,
+    youtubeId: '09R8_2nJtjg',
+    coverUrl: 'https://img.youtube.com/vi/09R8_2nJtjg/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-40',
+    title: 'Love Yourself',
+    artist: 'Justin Bieber',
+    reward: 4.10,
+    youtubeId: 'ngK7hDnB5GI',
+    coverUrl: 'https://img.youtube.com/vi/ngK7hDnB5GI/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-41',
+    title: 'What Do You Mean?',
+    artist: 'Justin Bieber',
+    reward: 3.70,
+    youtubeId: 'DK_0jXPuIr0',
+    coverUrl: 'https://img.youtube.com/vi/DK_0jXPuIr0/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-42',
+    title: 'Closer',
+    artist: 'The Chainsmokers ft. Halsey',
+    reward: 4.30,
+    youtubeId: 'lm_V4FpQb6k',
+    coverUrl: 'https://img.youtube.com/vi/lm_V4FpQb6k/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-43',
+    title: 'Rockabye',
+    artist: 'Clean Bandit ft. Sean Paul & Anne-Marie',
+    reward: 3.50,
+    youtubeId: 'y3KEhWwrOOg',
+    coverUrl: 'https://img.youtube.com/vi/y3KEhWwrOOg/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-44',
+    title: 'Watermelon Sugar',
+    artist: 'Harry Styles',
+    reward: 4.60,
+    youtubeId: 'E07s5ZYygMg',
+    coverUrl: 'https://img.youtube.com/vi/E07s5ZYygMg/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-45',
+    title: 'Don\'t Start Now',
+    artist: 'Dua Lipa',
+    reward: 4.40,
+    youtubeId: 'oygrmJFYZXQ',
+    coverUrl: 'https://img.youtube.com/vi/oygrmJFYZXQ/hqdefault.jpg',
+    genre: 'Disco Pop'
+  },
+  {
+    id: 's-46',
+    title: 'Save Your Tears',
+    artist: 'The Weeknd',
+    reward: 4.80,
+    youtubeId: 'yxW5yuzVi8w',
+    coverUrl: 'https://img.youtube.com/vi/yxW5yuzVi8w/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-47',
+    title: 'Peaches',
+    artist: 'Justin Bieber ft. Daniel Caesar & Giveon',
+    reward: 3.40,
+    youtubeId: 'tQ0yRZ8N2iM',
+    coverUrl: 'https://img.youtube.com/vi/tQ0yRZ8N2iM/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-48',
+    title: 'Montero',
+    artist: 'Lil Nas X',
+    reward: 4.00,
+    youtubeId: 'mykPZ95Aa0Q',
+    coverUrl: 'https://img.youtube.com/vi/mykPZ95Aa0Q/hqdefault.jpg',
+    genre: 'Pop Rap'
+  },
+  {
+    id: 's-49',
+    title: 'Kiss Me More',
+    artist: 'Doja Cat ft. SZA',
+    reward: 3.80,
+    youtubeId: 'gOgItZfT0aI',
+    coverUrl: 'https://img.youtube.com/vi/gOgItZfT0aI/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-50',
+    title: 'Butter',
+    artist: 'BTS',
+    reward: 5.00,
+    youtubeId: 'WMweQTRCRAo',
+    coverUrl: 'https://img.youtube.com/vi/WMweQTRCRAo/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-51',
+    title: 'Radioactive',
+    artist: 'Imagine Dragons',
+    reward: 3.90,
+    youtubeId: '5qapOaOQowI',
+    coverUrl: 'https://img.youtube.com/vi/5qapOaOQowI/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-52',
+    title: 'Titanium',
+    artist: 'David Guetta ft. Sia',
+    reward: 4.10,
+    youtubeId: 'JRfuAukYTKg',
+    coverUrl: 'https://img.youtube.com/vi/JRfuAukYTKg/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-53',
+    title: 'Dusk Till Dawn',
+    artist: 'ZAYN ft. Sia',
+    reward: 4.30,
+    youtubeId: 'KN_Zo6WKenk',
+    coverUrl: 'https://img.youtube.com/vi/KN_Zo6WKenk/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-54',
+    title: 'Wrecking Ball',
+    artist: 'Miley Cyrus',
+    reward: 4.50,
+    youtubeId: 'My2FRPA3GgE',
+    coverUrl: 'https://img.youtube.com/vi/My2FRPA3GgE/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-55',
+    title: 'Party Rock Anthem',
+    artist: 'LMFAO ft. Lauren Bennett',
+    reward: 3.70,
+    youtubeId: 'KQ6zrUnAT24',
+    coverUrl: 'https://img.youtube.com/vi/KQ6zrUnAT24/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-56',
+    title: 'Firework',
+    artist: 'Katy Perry',
+    reward: 4.20,
+    youtubeId: 'GZ36kZ8gDGc',
+    coverUrl: 'https://img.youtube.com/vi/GZ36kZ8gDGc/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-57',
+    title: 'Call Me Maybe',
+    artist: 'Carly Rae Jepsen',
+    reward: 3.50,
+    youtubeId: 'fWNaR-rxAic',
+    coverUrl: 'https://img.youtube.com/vi/fWNaR-rxAic/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-58',
+    title: 'Rolling in the Deep',
+    artist: 'Adele',
+    reward: 4.80,
+    youtubeId: 'rYEDA3JcQqw',
+    coverUrl: 'https://img.youtube.com/vi/rYEDA3JcQqw/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-59',
+    title: 'Umbrella',
+    artist: 'Rihanna ft. Jay-Z',
+    reward: 4.60,
+    youtubeId: 'CvBf7jJyjpk',
+    coverUrl: 'https://img.youtube.com/vi/CvBf7jJyjpk/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-60',
+    title: 'Clocks',
+    artist: 'Coldplay',
+    reward: 4.40,
+    youtubeId: 'd020scWpJTI',
+    coverUrl: 'https://img.youtube.com/vi/d020scWpJTI/hqdefault.jpg',
+    genre: 'Alternative'
+  },
+  {
+    id: 's-61',
+    title: 'Hey Ya!',
+    artist: 'OutKast',
+    reward: 4.00,
+    youtubeId: 'PWvGVpP37NM',
+    coverUrl: 'https://img.youtube.com/vi/PWvGVpP37NM/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-62',
+    title: 'Crazy in Love',
+    artist: 'Beyonce ft. Jay-Z',
+    reward: 4.70,
+    youtubeId: 'Vi8nZIz9DpA',
+    coverUrl: 'https://img.youtube.com/vi/Vi8nZIz9DpA/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-63',
+    title: 'Wonderwall',
+    artist: 'Oasis',
+    reward: 3.60,
+    youtubeId: 'bx1BhEeCq8Y',
+    coverUrl: 'https://img.youtube.com/vi/bx1BhEeCq8Y/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-64',
+    title: 'Mr. Brightside',
+    artist: 'The Killers',
+    reward: 4.90,
+    youtubeId: 'gGdGFtwCNCE',
+    coverUrl: 'https://img.youtube.com/vi/gGdGFtwCNCE/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-65',
+    title: 'Lose Yourself',
+    artist: 'Eminem',
+    reward: 5.00,
+    youtubeId: '_YhypahhFTE',
+    coverUrl: 'https://img.youtube.com/vi/_YhypahhFTE/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-66',
+    title: 'Boulevard of Broken Dreams',
+    artist: 'Green Day',
+    reward: 3.90,
+    youtubeId: 'so6ZlgX0-0I',
+    coverUrl: 'https://img.youtube.com/vi/so6ZlgX0-0I/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-67',
+    title: 'In Da Club',
+    artist: '50 Cent',
+    reward: 3.70,
+    youtubeId: 'zVF6q2VDGxU',
+    coverUrl: 'https://img.youtube.com/vi/zVF6q2VDGxU/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-68',
+    title: 'Empire State of Mind',
+    artist: 'Jay-Z ft. Alicia Keys',
+    reward: 4.30,
+    youtubeId: 'BDG2m12BGMo',
+    coverUrl: 'https://img.youtube.com/vi/BDG2m12BGMo/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-69',
+    title: 'Thriller',
+    artist: 'Michael Jackson',
+    reward: 4.80,
+    youtubeId: 'sOnqjkJTMaA',
+    coverUrl: 'https://img.youtube.com/vi/sOnqjkJTMaA/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-70',
+    title: 'Sweet Child O Mine',
+    artist: 'Guns N Roses',
+    reward: 4.50,
+    youtubeId: '1w7OgIMRRcM',
+    coverUrl: 'https://img.youtube.com/vi/1w7OgIMRRcM/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-71',
+    title: 'Toxic',
+    artist: 'Britney Spears',
+    reward: 4.10,
+    youtubeId: 'LOZuxwVk7T4',
+    coverUrl: 'https://img.youtube.com/vi/LOZuxwVk7T4/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-72',
+    title: 'Crazy Train',
+    artist: 'Ozzy Osbourne',
+    reward: 3.80,
+    youtubeId: 'hQ4vKmn2vaY',
+    coverUrl: 'https://img.youtube.com/vi/hQ4vKmn2vaY/hqdefault.jpg',
+    genre: 'Metal'
+  },
+  {
+    id: 's-73',
+    title: 'Livin La Vida Loca',
+    artist: 'Ricky Martin',
+    reward: 3.60,
+    youtubeId: 'l-Emh2Mn2GY',
+    coverUrl: 'https://img.youtube.com/vi/l-Emh2Mn2GY/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-74',
+    title: 'Californication',
+    artist: 'Red Hot Chili Peppers',
+    reward: 4.40,
+    youtubeId: 'YlUKcCNmeek',
+    coverUrl: 'https://img.youtube.com/vi/YlUKcCNmeek/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-75',
+    title: 'Stan',
+    artist: 'Eminem ft. Dido',
+    reward: 4.70,
+    youtubeId: 'gOMhN-hXpMg',
+    coverUrl: 'https://img.youtube.com/vi/gOMhN-hXpMg/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-76',
+    title: 'Take On Me',
+    artist: 'a-ha',
+    reward: 3.50,
+    youtubeId: 'djV11Xbc914',
+    coverUrl: 'https://img.youtube.com/vi/djV11Xbc914/hqdefault.jpg',
+    genre: 'Synth Pop'
+  },
+  {
+    id: 's-77',
+    title: 'Blurred Lines',
+    artist: 'Robin Thicke ft. T.I. & Pharrell',
+    reward: 3.90,
+    youtubeId: 'y6120QOlsfU',
+    coverUrl: 'https://img.youtube.com/vi/y6120QOlsfU/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-78',
+    title: 'All About That Bass',
+    artist: 'Meghan Trainor',
+    reward: 3.40,
+    youtubeId: '7PCkvCPvDXk',
+    coverUrl: 'https://img.youtube.com/vi/7PCkvCPvDXk/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-79',
+    title: 'Take Me to Church',
+    artist: 'Hozier',
+    reward: 4.60,
+    youtubeId: 'PVjiKx7zCqs',
+    coverUrl: 'https://img.youtube.com/vi/PVjiKx7zCqs/hqdefault.jpg',
+    genre: 'Indie'
+  },
+  {
+    id: 's-80',
+    title: 'Happy',
+    artist: 'Pharrell Williams',
+    reward: 4.00,
+    youtubeId: 'y6Sxv-sUYtM',
+    coverUrl: 'https://img.youtube.com/vi/y6Sxv-sUYtM/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-81',
+    title: 'Riptide',
+    artist: 'Vance Joy',
+    reward: 3.70,
+    youtubeId: 'UVLmHvJk6dI',
+    coverUrl: 'https://img.youtube.com/vi/UVLmHvJk6dI/hqdefault.jpg',
+    genre: 'Indie'
+  },
+  {
+    id: 's-82',
+    title: 'Rather Be',
+    artist: 'Clean Bandit ft. Jess Glynne',
+    reward: 4.30,
+    youtubeId: 'Bf02BDowWGk',
+    coverUrl: 'https://img.youtube.com/vi/Bf02BDowWGk/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-83',
+    title: 'Timber',
+    artist: 'Pitbull ft. Ke$ha',
+    reward: 3.60,
+    youtubeId: 'hHUb8fWOxNM',
+    coverUrl: 'https://img.youtube.com/vi/hHUb8fWOxNM/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-84',
+    title: 'Rude',
+    artist: 'MAGIC!',
+    reward: 3.50,
+    youtubeId: 'UVp0RRGvU0A',
+    coverUrl: 'https://img.youtube.com/vi/UVp0RRGvU0A/hqdefault.jpg',
+    genre: 'Reggae'
+  },
+  {
+    id: 's-85',
+    title: 'Fancy',
+    artist: 'Iggy Azalea ft. Charli XCX',
+    reward: 4.00,
+    youtubeId: '8qN4swHWqZA',
+    coverUrl: 'https://img.youtube.com/vi/8qN4swHWqZA/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-86',
+    title: 'Stay With Me',
+    artist: 'Sam Smith',
+    reward: 4.40,
+    youtubeId: 'bGBaUImd7yM',
+    coverUrl: 'https://img.youtube.com/vi/bGBaUImd7yM/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-87',
+    title: 'Royals',
+    artist: 'Lorde',
+    reward: 4.70,
+    youtubeId: 'pl3vzpeN0VY',
+    coverUrl: 'https://img.youtube.com/vi/pl3vzpeN0VY/hqdefault.jpg',
+    genre: 'Alternative'
+  },
+  {
+    id: 's-88',
+    title: 'Summertime Sadness',
+    artist: 'Lana Del Rey',
+    reward: 3.80,
+    youtubeId: 'Fk-DSlPHxTs',
+    coverUrl: 'https://img.youtube.com/vi/Fk-DSlPHxTs/hqdefault.jpg',
+    genre: 'Indie'
+  },
+  {
+    id: 's-89',
+    title: 'Wake Me Up',
+    artist: 'Avicii',
+    reward: 4.50,
+    youtubeId: 'IcrbM1l_BoI',
+    coverUrl: 'https://img.youtube.com/vi/IcrbM1l_BoI/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-90',
+    title: 'Levels',
+    artist: 'Avicii',
+    reward: 4.30,
+    youtubeId: 'v3OnLwM3kz0',
+    coverUrl: 'https://img.youtube.com/vi/v3OnLwM3kz0/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-91',
+    title: 'Hey Brother',
+    artist: 'Avicii',
+    reward: 3.90,
+    youtubeId: 'nKQWkAWQcN8',
+    coverUrl: 'https://img.youtube.com/vi/nKQWkAWQcN8/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-92',
+    title: 'Without Me',
+    artist: 'Eminem',
+    reward: 4.80,
+    youtubeId: 'O9GzK6pImSI',
+    coverUrl: 'https://img.youtube.com/vi/O9GzK6pImSI/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-93',
+    title: 'Mockingbird',
+    artist: 'Eminem',
+    reward: 4.40,
+    youtubeId: 'S9bT7QGRVjo',
+    coverUrl: 'https://img.youtube.com/vi/S9bT7QGRVjo/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-94',
+    title: 'The Real Slim Shady',
+    artist: 'Eminem',
+    reward: 4.20,
+    youtubeId: 'eS2rJiWWMVc',
+    coverUrl: 'https://img.youtube.com/vi/eS2rJiWWMVc/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-95',
+    title: 'Not Afraid',
+    artist: 'Eminem',
+    reward: 4.30,
+    youtubeId: 'j5-yKhDdOI4',
+    coverUrl: 'https://img.youtube.com/vi/j5-yKhDdOI4/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-96',
+    title: 'Super Bass',
+    artist: 'Nicki Minaj',
+    reward: 3.80,
+    youtubeId: 'LFsOAFL0jQA',
+    coverUrl: 'https://img.youtube.com/vi/LFsOAFL0jQA/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-97',
+    title: 'Starships',
+    artist: 'Nicki Minaj',
+    reward: 3.90,
+    youtubeId: 'T6eK-2OQtew',
+    coverUrl: 'https://img.youtube.com/vi/T6eK-2OQtew/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-98',
+    title: 'Anaconda',
+    artist: 'Nicki Minaj',
+    reward: 4.00,
+    youtubeId: 'iRdJhlRlfNM',
+    coverUrl: 'https://img.youtube.com/vi/iRdJhlRlfNM/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-99',
+    title: 'Bad Blood',
+    artist: 'Taylor Swift ft. Kendrick Lamar',
+    reward: 3.80,
+    youtubeId: 'QcI8-vMIo38',
+    coverUrl: 'https://img.youtube.com/vi/QcI8-vMIo38/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-100',
+    title: 'Payphone',
+    artist: 'Maroon 5 ft. Wiz Khalifa',
+    reward: 3.90,
+    youtubeId: 'K-aNlIwNlog',
+    coverUrl: 'https://img.youtube.com/vi/K-aNlIwNlog/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-101',
+    title: 'Maps',
+    artist: 'Maroon 5',
+    reward: 3.70,
+    youtubeId: 'lGhL1Z3UlgI',
+    coverUrl: 'https://img.youtube.com/vi/lGhL1Z3UlgI/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-102',
+    title: 'Moves Like Jagger',
+    artist: 'Maroon 5 ft. Christina Aguilera',
+    reward: 3.50,
+    youtubeId: 'iS1g8XnZ0Msb',
+    coverUrl: 'https://img.youtube.com/vi/iS1g8XnZ0Msb/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-103',
+    title: 'This Love',
+    artist: 'Maroon 5',
+    reward: 3.60,
+    youtubeId: 'nkBb-MbgkRY',
+    coverUrl: 'https://img.youtube.com/vi/nkBb-MbgkRY/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-104',
+    title: 'Sunday Morning',
+    artist: 'Maroon 5',
+    reward: 4.00,
+    youtubeId: 'SyCpWiBkU3Y',
+    coverUrl: 'https://img.youtube.com/vi/SyCpWiBkU3Y/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-105',
+    title: 'Locked Out of Heaven',
+    artist: 'Bruno Mars',
+    reward: 4.30,
+    youtubeId: 'e-ORhEE9VVgb',
+    coverUrl: 'https://img.youtube.com/vi/e-ORhEE9VVgb/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-106',
+    title: 'Just the Way You Are',
+    artist: 'Bruno Mars',
+    reward: 4.60,
+    youtubeId: 'L0MK7qz13bU',
+    coverUrl: 'https://img.youtube.com/vi/L0MK7qz13bU/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-107',
+    title: 'When I Was Your Man',
+    artist: 'Bruno Mars',
+    reward: 4.10,
+    youtubeId: 'EK_LNpjIkuc',
+    coverUrl: 'https://img.youtube.com/vi/EK_LNpjIkuc/hqdefault.jpg',
+    genre: 'Ballad'
+  },
+  {
+    id: 's-108',
+    title: '24K Magic',
+    artist: 'Bruno Mars',
+    reward: 4.80,
+    youtubeId: 'Uq04UHWMSfU',
+    coverUrl: 'https://img.youtube.com/vi/Uq04UHWMSfU/hqdefault.jpg',
+    genre: 'Funk'
+  },
+  {
+    id: 's-109',
+    title: 'Thats What I Like',
+    artist: 'Bruno Mars',
+    reward: 3.90,
+    youtubeId: 'PMiu1Wz4guI',
+    coverUrl: 'https://img.youtube.com/vi/PMiu1Wz4guI/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-110',
+    title: 'Grenade',
+    artist: 'Bruno Mars',
+    reward: 3.80,
+    youtubeId: 'v9kTifXUwpY',
+    coverUrl: 'https://img.youtube.com/vi/v9kTifXUwpY/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-111',
+    title: 'The Lazy Song',
+    artist: 'Bruno Mars',
+    reward: 3.50,
+    youtubeId: 'fPriBfS-R5c',
+    coverUrl: 'https://img.youtube.com/vi/fPriBfS-R5c/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-112',
+    title: 'Treasure',
+    artist: 'Bruno Mars',
+    reward: 4.00,
+    youtubeId: 'nYg-tLgRhnw',
+    coverUrl: 'https://img.youtube.com/vi/nYg-tLgRhnw/hqdefault.jpg',
+    genre: 'Funk'
+  },
+  {
+    id: 's-113',
+    title: 'Versace on the Floor',
+    artist: 'Bruno Mars',
+    reward: 3.70,
+    youtubeId: 'F13J1fRZ0lg',
+    coverUrl: 'https://img.youtube.com/vi/F13J1fRZ0lg/hqdefault.jpg',
+    genre: 'Ballad'
+  },
+  {
+    id: 's-114',
+    title: 'Finesse',
+    artist: 'Bruno Mars ft. Cardi B',
+    reward: 4.40,
+    youtubeId: 'sVx1mJDeUjY',
+    coverUrl: 'https://img.youtube.com/vi/sVx1mJDeUjY/hqdefault.jpg',
+    genre: 'Funk'
+  },
+  {
+    id: 's-115',
+    title: 'Shut Up and Dance',
+    artist: 'Walk the Moon',
+    reward: 4.00,
+    youtubeId: '6JxIGclVQdw',
+    coverUrl: 'https://img.youtube.com/vi/6JxIGclVQdw/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-116',
+    title: 'Love Me Like You Do',
+    artist: 'Ellie Goulding',
+    reward: 4.10,
+    youtubeId: 'AJtHPih4ZXQ',
+    coverUrl: 'https://img.youtube.com/vi/AJtHPih4ZXQ/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-117',
+    title: 'Dance Monkey',
+    artist: 'Tones and I',
+    reward: 4.50,
+    youtubeId: 'q0hyYWKXFUY',
+    coverUrl: 'https://img.youtube.com/vi/q0hyYWKXFUY/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-118',
+    title: 'Dont You Worry Child',
+    artist: 'Swedish House Mafia ft. John Martin',
+    reward: 4.30,
+    youtubeId: 'QSyJv0sCOyI',
+    coverUrl: 'https://img.youtube.com/vi/QSyJv0sCOyI/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-119',
+    title: 'Cant Hold Us',
+    artist: 'Macklemore & Ryan Lewis',
+    reward: 4.60,
+    youtubeId: '2zNSg09mrTb',
+    coverUrl: 'https://img.youtube.com/vi/2zNSg09mrTb/hqdefault.jpg',
+    genre: 'Hip Hop'
+  },
+  {
+    id: 's-120',
+    title: 'I Gotta Feeling',
+    artist: 'The Black Eyed Peas',
+    reward: 4.20,
+    youtubeId: 'np0aCfx-qbE',
+    coverUrl: 'https://img.youtube.com/vi/np0aCfx-qbE/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-121',
+    title: 'The Nights',
+    artist: 'Avicii',
+    reward: 4.10,
+    youtubeId: 'U1PYjW6Hr7Y',
+    coverUrl: 'https://img.youtube.com/vi/U1PYjW6Hr7Y/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-122',
+    title: 'Lean On',
+    artist: 'Major Lazer & DJ Snake',
+    reward: 4.10,
+    youtubeId: 'YV-f7fR22hEa',
+    coverUrl: 'https://img.youtube.com/vi/YV-f7fR22hEa/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-123',
+    title: 'Love Me Harder',
+    artist: 'Ariana Grande & The Weeknd',
+    reward: 3.80,
+    youtubeId: 'brFmyOtKbE4',
+    coverUrl: 'https://img.youtube.com/vi/brFmyOtKbE4/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-124',
+    title: 'The Hills',
+    artist: 'The Weeknd',
+    reward: 4.60,
+    youtubeId: 'ekr2nIex040',
+    coverUrl: 'https://img.youtube.com/vi/ekr2nIex040/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-125',
+    title: 'Earned It',
+    artist: 'The Weeknd',
+    reward: 4.20,
+    youtubeId: 'waFZJMFpSMk',
+    coverUrl: 'https://img.youtube.com/vi/waFZJMFpSMk/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-126',
+    title: 'Cant Feel My Face',
+    artist: 'The Weeknd',
+    reward: 4.40,
+    youtubeId: 'K-eLkQW7KzE',
+    coverUrl: 'https://img.youtube.com/vi/K-eLkQW7KzE/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-127',
+    title: 'Starboy',
+    artist: 'The Weeknd ft. Daft Punk',
+    reward: 4.70,
+    youtubeId: '34Z6h4hpIBc',
+    coverUrl: 'https://img.youtube.com/vi/34Z6h4hpIBc/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-128',
+    title: 'After Hours',
+    artist: 'The Weeknd',
+    reward: 4.50,
+    youtubeId: 'XXlCY4VjJ8Y',
+    coverUrl: 'https://img.youtube.com/vi/XXlCY4VjJ8Y/hqdefault.jpg',
+    genre: 'R&B'
+  },
+  {
+    id: 's-129',
+    title: 'Dangerous Woman',
+    artist: 'Ariana Grande',
+    reward: 4.60,
+    youtubeId: 'OvyBr7Yv1nE',
+    coverUrl: 'https://img.youtube.com/vi/OvyBr7Yv1nE/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-130',
+    title: 'Needy',
+    artist: 'Ariana Grande',
+    reward: 3.40,
+    youtubeId: 'aS5Or3ZJZ6c',
+    coverUrl: 'https://img.youtube.com/vi/aS5Or3ZJZ6c/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-131',
+    title: 'Imagine',
+    artist: 'Ariana Grande',
+    reward: 3.90,
+    youtubeId: 'OvyBr7Yv1nF',
+    coverUrl: 'https://img.youtube.com/vi/OvyBr7Yv1nF/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-132',
+    title: 'Bloodline',
+    artist: 'Ariana Grande',
+    reward: 3.70,
+    youtubeId: 'aS5Or3ZJZ6d',
+    coverUrl: 'https://img.youtube.com/vi/aS5Or3ZJZ6d/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-133',
+    title: 'Physical',
+    artist: 'Dua Lipa',
+    reward: 4.00,
+    youtubeId: 'TUVcZfQe-K8c',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8c/hqdefault.jpg',
+    genre: 'Dance Pop'
+  },
+  {
+    id: 's-134',
+    title: 'Break My Heart',
+    artist: 'Dua Lipa',
+    reward: 3.80,
+    youtubeId: 'TUVcZfQe-K8d',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8d/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-135',
+    title: 'Hallucinate',
+    artist: 'Dua Lipa',
+    reward: 3.60,
+    youtubeId: 'TUVcZfQe-K8e',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8e/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-136',
+    title: 'Love Again',
+    artist: 'Dua Lipa',
+    reward: 4.20,
+    youtubeId: 'TUVcZfQe-K8f',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8f/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-137',
+    title: 'Levitating Remix',
+    artist: 'Dua Lipa ft. DaBaby',
+    reward: 4.10,
+    youtubeId: 'TUVcZfQe-K8g',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8g/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-138',
+    title: 'Prisoner',
+    artist: 'Dua Lipa ft. Miley Cyrus',
+    reward: 3.90,
+    youtubeId: 'TUVcZfQe-K8h',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8h/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-139',
+    title: 'Regret',
+    artist: 'Dua Lipa',
+    reward: 3.50,
+    youtubeId: 'TUVcZfQe-K8i',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8i/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-140',
+    title: 'Cool',
+    artist: 'Dua Lipa',
+    reward: 3.70,
+    youtubeId: 'TUVcZfQe-K8j',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8j/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-141',
+    title: 'Good In Bed',
+    artist: 'Dua Lipa',
+    reward: 3.40,
+    youtubeId: 'TUVcZfQe-K8k',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8k/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-142',
+    title: 'Boys Will Be Boys',
+    artist: 'Dua Lipa',
+    reward: 3.30,
+    youtubeId: 'TUVcZfQe-K8l',
+    coverUrl: 'https://img.youtube.com/vi/TUVcZfQe-K8l/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-143',
+    title: 'Seven Nation Army',
+    artist: 'The White Stripes',
+    reward: 4.50,
+    youtubeId: '0JlQcvTdRVk',
+    coverUrl: 'https://img.youtube.com/vi/0JlQcvTdRVk/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-144',
+    title: 'Sandstorm',
+    artist: 'Darude',
+    reward: 4.00,
+    youtubeId: 'qL0EkN6oC0c',
+    coverUrl: 'https://img.youtube.com/vi/qL0EkN6oC0c/hqdefault.jpg',
+    genre: 'EDM'
+  },
+  {
+    id: 's-145',
+    title: 'Blue Da Ba Dee',
+    artist: 'Eiffel 65',
+    reward: 3.70,
+    youtubeId: '6n3pFFPSHLU',
+    coverUrl: 'https://img.youtube.com/vi/6n3pFFPSHLU/hqdefault.jpg',
+    genre: 'Dance'
+  },
+  {
+    id: 's-146',
+    title: 'Smooth Criminal',
+    artist: 'Michael Jackson',
+    reward: 4.80,
+    youtubeId: 'sWq6aGBk0mE',
+    coverUrl: 'https://img.youtube.com/vi/sWq6aGBk0mE/hqdefault.jpg',
+    genre: 'Pop'
+  },
+  {
+    id: 's-147',
+    title: 'Enter Sandman',
+    artist: 'Metallica',
+    reward: 4.60,
+    youtubeId: 'CD-E-LDnC0c',
+    coverUrl: 'https://img.youtube.com/vi/CD-E-LDnC0c/hqdefault.jpg',
+    genre: 'Metal'
+  },
+  {
+    id: 's-148',
+    title: 'Back in Black',
+    artist: 'AC DC',
+    reward: 4.30,
+    youtubeId: 'pRsdA2viZgI',
+    coverUrl: 'https://img.youtube.com/vi/pRsdA2viZgI/hqdefault.jpg',
+    genre: 'Rock'
+  },
+  {
+    id: 's-149',
+    title: 'Iron Man',
+    artist: 'Black Sabbath',
+    reward: 4.20,
+    youtubeId: 'QkG8aDpZ0mI',
+    coverUrl: 'https://img.youtube.com/vi/QkG8aDpZ0mI/hqdefault.jpg',
+    genre: 'Metal'
+  },
+  {
+    id: 's-150',
+    title: 'Sweet Dreams',
+    artist: 'Eurythmics',
+    reward: 4.10,
+    youtubeId: 'qeMFq9mQ5GQ',
+    coverUrl: 'https://img.youtube.com/vi/qeMFq9mQ5GQ/hqdefault.jpg',
+    genre: 'Synth Pop'
   }
 ];
 
@@ -403,7 +1483,7 @@ export default function Taf26RendaPage() {
 
   // Day tracking: which day (1-30) and which videos completed today
   const dayNumber = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % 30) + 1;
-  const dailyVideos: Song[] = songs.slice((dayNumber - 1) * 5, dayNumber * 5);
+  const dailyVideos: Song[] = songs.slice((dayNumber - 1) * 5, (dayNumber - 1) * 5 + 5);
   const [videoCompleted, setVideoCompleted] = useState<boolean[]>(Array(5).fill(false));
   const currentDaySongIndex = currentSongIndex % 5;
   
@@ -606,7 +1686,11 @@ export default function Taf26RendaPage() {
 
   // Handle next video transition
   const handleNextVideo = () => {
-    setCurrentSongIndex((prevIndex) => (prevIndex + 1) % songs.length);
+    if (currentDaySongIndex + 1 >= dailyVideos.length) {
+      showToast('Todas as 5 músicas de hoje foram concluídas! Volte amanhã.', 'info');
+      return;
+    }
+    setCurrentSongIndex((prevIndex) => prevIndex + 1);
     setSecondsElapsed(0);
     setSongProgress(0);
     setRewarded(false);
@@ -1369,11 +2453,11 @@ export default function Taf26RendaPage() {
                       Playlist de Renda Diária
                     </h3>
                     <div className="space-y-2">
-                      {songs.map((song, idx) => (
+                      {dailyVideos.map((song, idx) => (
                         <div 
                           key={song.id}
                           className={`p-3 rounded-xl border transition-all flex items-center justify-between ${
-                            currentSongIndex === idx 
+                            currentDaySongIndex === idx 
                               ? 'bg-emerald-950/20 border-emerald-500/40' 
                               : 'bg-[#181818] border-zinc-800 hover:border-zinc-700'
                           }`}
@@ -1388,7 +2472,7 @@ export default function Taf26RendaPage() {
                                 referrerPolicy="no-referrer"
                                 className="object-cover" 
                               />
-                              {currentSongIndex === idx && isPlaying && (
+                              {currentDaySongIndex === idx && isPlaying && (
                                 <div className="absolute inset-0 bg-[#1db954]/20 flex items-center justify-center">
                                   <span className="w-2.5 h-2.5 bg-[#1db954] rounded-full animate-ping" />
                                 </div>
@@ -1408,7 +2492,7 @@ export default function Taf26RendaPage() {
                             <button
                               id={`select-song-btn-${song.id}`}
                               onClick={() => {
-                                if (currentSongIndex === idx) {
+                                if (currentDaySongIndex === idx) {
                                   togglePlay();
                                 } else {
                                   setCurrentSongIndex(idx);
@@ -1424,12 +2508,12 @@ setTimeout(() => {
                                 }
                               }}
                               className={`p-2 rounded-full cursor-pointer transition-all ${
-                                currentSongIndex === idx && isPlaying 
+                                currentDaySongIndex === idx && isPlaying 
                                   ? 'bg-[#1DB954] text-black' 
                                   : 'bg-zinc-800 text-white hover:bg-zinc-700'
                               }`}
                             >
-                              {currentSongIndex === idx && isPlaying ? (
+                              {currentDaySongIndex === idx && isPlaying ? (
                                 <Pause className="w-3.5 h-3.5 fill-current" />
                               ) : (
                                 <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
