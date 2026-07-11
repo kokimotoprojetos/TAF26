@@ -1,0 +1,6 @@
+{
+  "name": "TAF26 RENDA DIÁRIA",
+  "description": "Plataforma de renda diária escutando música com saques via PIX e sistema de convites.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
