@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Headphones, Lock, Mail, User, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const ref = searchParams.get('ref');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,6 +23,8 @@ export default function SignUpPage() {
     setError(null);
     setSuccess(null);
 
+    const newUserRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+
     try {
       const { data, error: authError } = await supabase.auth.signUp({
         email,
@@ -28,12 +32,38 @@ export default function SignUpPage() {
         options: {
           data: {
             full_name: name,
+            ref_code: newUserRefCode,
+            referred_by: ref || '',
+            balance: 25.00,
+            today_earnings: 0.00,
+            total_income: 25.00,
+            vip_level: 0,
           },
         },
       });
 
       if (authError) {
         throw authError;
+      }
+
+      const signedUpUser = data?.user;
+
+      // Call the backend to process the referral reward if referred_by exists
+      if (signedUpUser && ref) {
+        try {
+          await fetch('/api/user/register-referral', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              newUserId: signedUpUser.id,
+              referredBy: ref,
+            }),
+          });
+        } catch (apiErr) {
+          console.error('Error calling register-referral endpoint:', apiErr);
+        }
       }
 
       // Check if email confirmation is required
@@ -163,5 +193,17 @@ export default function SignUpPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-black text-white flex justify-center items-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#1DB954]" />
+      </div>
+    }>
+      <SignUpContent />
+    </Suspense>
   );
 }

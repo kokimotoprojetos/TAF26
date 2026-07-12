@@ -4964,14 +4964,28 @@ export default function Taf26RendaPage() {
   useEffect(() => {
     if (!user || !isInitializedRef.current) return;
     const saveToSupabase = async () => {
-      const meta = user.user_metadata || {};
-      if (
-        meta.balance !== balance ||
-        meta.today_earnings !== todayEarnings ||
-        meta.total_income !== totalIncome ||
-        meta.vip_level !== vipLevel
-      ) {
-        try {
+      try {
+        // Fetch the latest user metadata from Supabase to avoid overwriting server-side changes
+        const { data: { user: freshUser } } = await supabase.auth.getUser();
+        if (!freshUser) return;
+        
+        const meta = freshUser.user_metadata || {};
+        
+        // Sync local state if server has higher values (e.g. referral credit from admin)
+        const serverBalance = parseFloat(meta.balance) || 0;
+        const serverToday = parseFloat(meta.today_earnings) || 0;
+        const serverTotal = parseFloat(meta.total_income) || 0;
+        
+        if (serverBalance > balance) setBalance(serverBalance);
+        if (serverToday > todayEarnings) setTodayEarnings(serverToday);
+        if (serverTotal > totalIncome) setTotalIncome(serverTotal);
+        
+        if (
+          meta.balance !== balance ||
+          meta.today_earnings !== todayEarnings ||
+          meta.total_income !== totalIncome ||
+          meta.vip_level !== vipLevel
+        ) {
           const { data: { user: updatedUser }, error } = await supabase.auth.updateUser({
             data: {
               ...meta,
@@ -4984,9 +4998,9 @@ export default function Taf26RendaPage() {
           if (!error && updatedUser) {
             setUser(updatedUser);
           }
-        } catch (err) {
-          console.error('Error auto-saving metadata to Supabase:', err);
         }
+      } catch (err) {
+        console.error('Error auto-saving metadata to Supabase:', err);
       }
     };
 
@@ -5220,6 +5234,25 @@ export default function Taf26RendaPage() {
     showToast('Próxima música da playlist iniciada!', 'success');
   };
 
+  // Check if all 5 daily videos are completed
+  const allVideosCompleted = videoCompleted.every(Boolean);
+
+  // Auto-advance to next uncompleted song after reward
+  useEffect(() => {
+    if (rewarded && !allVideosCompleted) {
+      const timer = setTimeout(() => {
+        const nextIndex = videoCompleted.findIndex((done) => !done);
+        if (nextIndex !== -1 && nextIndex !== currentDaySongIndex) {
+          setCurrentSongIndex(nextIndex);
+          setSecondsElapsed(0);
+          setSongProgress(0);
+          setRewarded(false);
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [rewarded, allVideosCompleted]);
+
   // Real-time ticking logic
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -5330,6 +5363,15 @@ export default function Taf26RendaPage() {
         return next;
       });
 
+      // Pause the video and stop playing after reward
+      setTimeout(() => {
+        if (playerRef.current) {
+          playerRef.current.pauseVideo();
+        }
+        setIsPlaying(false);
+        showToast('Música concluída! Próxima música disponível.', 'info');
+      }, 500);
+
       // Increment video mission progress (m-4)
       setMissions((prevMissions) =>
         prevMissions.map((m) => {
@@ -5355,8 +5397,31 @@ export default function Taf26RendaPage() {
   }, [currentSongIndex]);
 
   // Copy referral link
-  const copyReferralLink = () => {
-    const refCode = user?.user_metadata?.ref_code || `user${Math.floor(1000 + Math.random() * 9000)}`;
+  const copyReferralLink = async () => {
+    let refCode = user?.user_metadata?.ref_code;
+    if (!refCode) {
+      // Generate and save a real ref_code before copying
+      const generatedRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+      try {
+        const meta = user?.user_metadata || {};
+        const { data: updateData, error } = await supabase.auth.updateUser({
+          data: {
+            ...meta,
+            ref_code: generatedRefCode,
+          }
+        });
+        if (!error && updateData?.user) {
+          setUser(updateData.user);
+          refCode = generatedRefCode;
+        } else {
+          showToast('Erro ao gerar código de convite. Tente novamente.', 'error');
+          return;
+        }
+      } catch {
+        showToast('Erro ao gerar código de convite. Tente novamente.', 'error');
+        return;
+      }
+    }
     const link = `https://www.taf26.site/invite?ref=${refCode}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopiedLink(true);
@@ -5869,6 +5934,23 @@ export default function Taf26RendaPage() {
                 <div className="space-y-4">
                   
                   {/* Core Music Player Console Card */}
+                  {allVideosCompleted ? (
+                    <div className="bg-gradient-to-br from-[#1c2c22] to-[#141414] border border-[#21432f]/40 rounded-2xl p-8 shadow-lg relative overflow-hidden text-center">
+                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl" />
+                      <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Check className="w-8 h-8 text-emerald-400" />
+                      </div>
+                      <h3 className="text-base font-bold text-white">Todas as músicas de hoje foram concluídas!</h3>
+                      <p className="text-xs text-zinc-400 mt-2">Volte amanhã para nova playlist ou acesse os planos VIP para ganhar mais.</p>
+                      <button
+                        onClick={() => setActiveTab('vip')}
+                        className="mt-4 px-6 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 cursor-pointer mx-auto"
+                      >
+                        <Zap className="w-4 h-4 fill-current" />
+                        Ganhar Mais
+                      </button>
+                    </div>
+                  ) : (
                   <div className="bg-gradient-to-br from-[#1c2c22] to-[#141414] border border-[#21432f]/40 rounded-2xl p-5 shadow-lg relative overflow-hidden">
                     
                     {/* Active listening green blur indicator */}
@@ -5981,6 +6063,7 @@ export default function Taf26RendaPage() {
                     </div>
 
                   </div>
+                  )}
 
                   {/* Playlist Queue (Matches product display structure from photo) */}
                   <div>
@@ -6005,9 +6088,14 @@ export default function Taf26RendaPage() {
                                 fill 
                                 sizes="40px"
                                 referrerPolicy="no-referrer"
-                                className="object-cover" 
+                                className={`object-cover ${videoCompleted[idx] ? 'opacity-50' : ''}`}
                               />
-                              {currentDaySongIndex === idx && isPlaying && (
+                              {videoCompleted[idx] && (
+                                <div className="absolute inset-0 bg-emerald-500/30 flex items-center justify-center">
+                                  <Check className="w-5 h-5 text-white" />
+                                </div>
+                              )}
+                              {currentDaySongIndex === idx && isPlaying && !videoCompleted[idx] && (
                                 <div className="absolute inset-0 bg-[#1db954]/20 flex items-center justify-center">
                                   <span className="w-2.5 h-2.5 bg-[#1db954] rounded-full animate-ping" />
                                 </div>
@@ -6020,45 +6108,70 @@ export default function Taf26RendaPage() {
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-emerald-400 bg-[#1db954]/10 px-2 py-1 rounded-full whitespace-nowrap">
-                              R$ {song.reward.toFixed(2)}
-                            </span>
+                            {videoCompleted[idx] ? (
+                              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/20 px-2 py-1 rounded-full whitespace-nowrap flex items-center gap-1">
+                                <Check className="w-3 h-3" /> Concluído
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-emerald-400 bg-[#1db954]/10 px-2 py-1 rounded-full whitespace-nowrap">
+                                R$ {song.reward.toFixed(2)}
+                              </span>
+                            )}
                             
-                            <button
-                              id={`select-song-btn-${song.id}`}
-                              onClick={() => {
-                                if (currentDaySongIndex === idx) {
-                                  togglePlay();
-                                } else {
-                                  setCurrentSongIndex(idx);
-                                  setSecondsElapsed(0);
-                                  setSongProgress(0);
-                                  setIsPlaying(true);
-setTimeout(() => {
+                            {!videoCompleted[idx] && (
+                              <button
+                                id={`select-song-btn-${song.id}`}
+                                onClick={() => {
+                                  if (currentDaySongIndex === idx) {
+                                    togglePlay();
+                                  } else {
+                                    setCurrentSongIndex(idx);
+                                    setSecondsElapsed(0);
+                                    setSongProgress(0);
+                                    setIsPlaying(true);
+                                    setTimeout(() => {
                                       if (playerRef.current) {
                                         playerRef.current.playVideo();
                                       }
                                     }, 100);
-                                  showToast(`Iniciando ${song.title}`, 'success');
-                                }
-                              }}
-                              className={`p-2 rounded-full cursor-pointer transition-all ${
-                                currentDaySongIndex === idx && isPlaying 
-                                  ? 'bg-[#1DB954] text-black' 
-                                  : 'bg-zinc-800 text-white hover:bg-zinc-700'
-                              }`}
-                            >
-                              {currentDaySongIndex === idx && isPlaying ? (
-                                <Pause className="w-3.5 h-3.5 fill-current" />
-                              ) : (
-                                <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
-                              )}
-                            </button>
+                                    showToast(`Iniciando ${song.title}`, 'success');
+                                  }
+                                }}
+                                className={`p-2 rounded-full cursor-pointer transition-all ${
+                                  currentDaySongIndex === idx && isPlaying 
+                                    ? 'bg-[#1DB954] text-black' 
+                                    : 'bg-zinc-800 text-white hover:bg-zinc-700'
+                                }`}
+                              >
+                                {currentDaySongIndex === idx && isPlaying ? (
+                                  <Pause className="w-3.5 h-3.5 fill-current" />
+                                ) : (
+                                  <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                                )}
+                              </button>
+                            )}
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
+
+                  {/* Ganhar Mais button - shows after all 5 clips completed */}
+                  {allVideosCompleted && (
+                    <div className="mt-4">
+                      <button
+                        id="ganhar-mais-btn"
+                        onClick={() => setActiveTab('vip')}
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-black font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 cursor-pointer"
+                      >
+                        <Zap className="w-4 h-4 fill-current" />
+                        Ganhar Mais - Acesse Planos VIP
+                      </button>
+                      <p className="text-[10px] text-zinc-500 text-center mt-2">
+                        Você completou todas as músicas de hoje! Multiplique seus ganhos com um plano VIP.
+                      </p>
+                    </div>
+                  )}
 
                 </div>
               )}

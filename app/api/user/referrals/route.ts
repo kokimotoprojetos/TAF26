@@ -6,6 +6,31 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+async function getAllUsers() {
+  const allUsers: any[] = [];
+  let page = 1;
+  const perPage = 1000;
+  
+  while (true) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      perPage,
+      page,
+    });
+    
+    if (error || !data?.users) break;
+    
+    allUsers.push(...data.users);
+    
+    if (data.users.length < perPage) break;
+    page++;
+    
+    // Safety limit: max 10 pages (10,000 users)
+    if (page > 10) break;
+  }
+  
+  return allUsers;
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const refCode = searchParams.get('refCode');
@@ -15,26 +40,15 @@ export async function GET(req: Request) {
   }
 
   try {
-    // List all users from auth to find referrals
-    // Note: listUsers defaults to pagination (usually 50 users, max 1000). 
-    // In a production app, we would query a PostgreSQL table 'profiles' or 'referrals' instead.
-    // However, since this codebase relies entirely on Auth metadata, we list users.
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
-      perPage: 1000
-    });
+    const allUsers = await getAllUsers();
 
-    if (error) {
-      throw error;
-    }
-
-    const referralUsers = (data?.users || []).filter(
+    const referralUsers = allUsers.filter(
       (u) => u.user_metadata?.referred_by === refCode
     );
 
     // Map to Referral interface
     const referrals = referralUsers.map((u) => {
       const name = u.user_metadata?.full_name || u.email || 'Usuário';
-      // Mask email or name slightly for privacy
       let displayName = name;
       if (name.includes('@')) {
         const [parts, domain] = name.split('@');

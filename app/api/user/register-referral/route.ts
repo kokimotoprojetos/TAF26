@@ -6,6 +6,31 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+async function getAllUsers() {
+  const allUsers: any[] = [];
+  let page = 1;
+  const perPage = 1000;
+  
+  while (true) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      perPage,
+      page,
+    });
+    
+    if (error || !data?.users) break;
+    
+    allUsers.push(...data.users);
+    
+    if (data.users.length < perPage) break;
+    page++;
+    
+    // Safety limit: max 10 pages (10,000 users)
+    if (page > 10) break;
+  }
+  
+  return allUsers;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -41,14 +66,9 @@ export async function POST(req: Request) {
     }
 
     // 2. Find the referrer (A) who has user_metadata.ref_code === referredBy
-    const { data: usersData, error: listError } =
-      await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
+    const allUsers = await getAllUsers();
 
-    if (listError || !usersData?.users) {
-      throw listError || new Error('Falha ao listar usuários');
-    }
-
-    const referrer = usersData.users.find(
+    const referrer = allUsers.find(
       (u) => u.user_metadata?.ref_code === referredBy
     );
 
