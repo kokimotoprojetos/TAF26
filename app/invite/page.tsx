@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -20,7 +20,7 @@ import { supabase } from '@/lib/supabase';
 function InviteContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [ref, setRef] = useState<string | null>(null);
+  const ref = searchParams.get('ref');
 
   // States for registration form
   const [name, setName] = useState('');
@@ -29,13 +29,6 @@ function InviteContent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  useEffect(() => {
-    const refParam = searchParams.get('ref');
-    if (refParam) {
-      setRef(refParam);
-    }
-  }, [searchParams]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +47,7 @@ function InviteContent() {
         options: {
           data: {
             full_name: name,
-            referred_by: ref || '',
+            ...(ref ? { referred_by: ref } : {}),
             ref_code: newUserRefCode,
             balance: 25.00, // starting bonus
             today_earnings: 0.00,

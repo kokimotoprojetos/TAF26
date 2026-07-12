@@ -4899,7 +4899,19 @@ export default function Taf26RendaPage() {
   // Day tracking: which day (1-30) and which videos completed today
   const dayNumber = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % 30) + 1;
   const dailyVideos: Song[] = songs.slice((dayNumber - 1) * 5, (dayNumber - 1) * 5 + 5);
-  const [videoCompleted, setVideoCompleted] = useState<boolean[]>(Array(5).fill(false));
+  
+  const getInitialVideoCompleted = () => {
+    try {
+      const saved = localStorage.getItem('videoCompleted');
+      const savedDay = localStorage.getItem('videoCompletedDay');
+      const todayStr = new Date().toLocaleDateString('pt-BR');
+      if (saved && savedDay === todayStr) {
+        return JSON.parse(saved);
+      }
+    } catch {}
+    return Array(5).fill(false);
+  };
+  const [videoCompleted, setVideoCompleted] = useState<boolean[]>(getInitialVideoCompleted);
   const currentDaySongIndex = currentSongIndex % 5;
   
   // Modals & Flows
@@ -5312,6 +5324,30 @@ export default function Taf26RendaPage() {
     localStorage.setItem('missions', JSON.stringify(missions));
   }, [missions]);
 
+  // Persist videoCompleted to localStorage
+  useEffect(() => {
+    localStorage.setItem('videoCompleted', JSON.stringify(videoCompleted));
+    localStorage.setItem('videoCompletedDay', new Date().toLocaleDateString('pt-BR'));
+  }, [videoCompleted]);
+
+  // Check for day change and reset todayEarnings + videoCompleted
+  useEffect(() => {
+    const checkDayChange = () => {
+      const today = new Date().toLocaleDateString('pt-BR');
+      const lastReset = localStorage.getItem('dayChangeDate');
+      if (lastReset !== today) {
+        localStorage.setItem('dayChangeDate', today);
+        setTodayEarnings(0.00);
+        setVideoCompleted(Array(5).fill(false));
+        localStorage.removeItem('videoCompleted');
+        localStorage.removeItem('videoCompletedDay');
+      }
+    };
+    checkDayChange();
+    const interval = setInterval(checkDayChange, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Check for day change and reset missions
   useEffect(() => {
     const checkDayChange = () => {
@@ -5635,15 +5671,26 @@ export default function Taf26RendaPage() {
   };
 
   // Force page reload look
-  const handleReload = () => {
+  const handleReload = async () => {
     showToast('Sincronizando saldo com os servidores da TAF26...', 'info');
     setIsPlaying(false);
     if (playerRef.current) {
       playerRef.current.pauseVideo();
     }
-    setTimeout(() => {
+    try {
+      const { data: { user: freshUser } } = await supabase.auth.getUser();
+      if (freshUser) {
+        const meta = freshUser.user_metadata || {};
+        if (meta.balance !== undefined) setBalance(parseFloat(meta.balance));
+        if (meta.today_earnings !== undefined) setTodayEarnings(parseFloat(meta.today_earnings));
+        if (meta.total_income !== undefined) setTotalIncome(parseFloat(meta.total_income));
+        if (meta.vip_level !== undefined) setVipLevel(parseInt(meta.vip_level));
+        setUser(freshUser);
+      }
       showToast('Dados atualizados com sucesso!', 'success');
-    }, 1000);
+    } catch {
+      showToast('Erro ao sincronizar dados.', 'error');
+    }
   };
 
   if (isUserLoading) {

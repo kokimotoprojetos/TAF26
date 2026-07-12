@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
 import QRCode from 'qrcode';
 
-const IRONPAY_API = process.env.IRONPAY_API_URL || 'https://api.ironpayapp.com.br/api/public/v1';
-const TOKEN = process.env.IRONPAY_API_TOKEN || '4O63OTh1YMYiOtABqOHdNSVjEoFw7sFvARqlNP9ZkFZalo8vf2D5yHrM1il4';
+const IRONPAY_API = process.env.IRONPAY_API_URL!;
+const TOKEN = process.env.IRONPAY_API_TOKEN!;
 
 const OFFERS: Record<number, string> = {
-  1: process.env.IRONPAY_OFFER_VIP1 || 'kkb7m',
-  2: process.env.IRONPAY_OFFER_VIP2 || '9fb4t',
-  3: process.env.IRONPAY_OFFER_VIP3 || 'rttei',
+  1: process.env.IRONPAY_OFFER_VIP1!,
+  2: process.env.IRONPAY_OFFER_VIP2!,
+  3: process.env.IRONPAY_OFFER_VIP3!,
 };
 
 const PRODUCT_HASHES: Record<number, string> = {
-  1: process.env.IRONPAY_PRODUCT_VIP1 || 'rgeky5rvpm',
-  2: process.env.IRONPAY_PRODUCT_VIP2 || 'le6ewadvyb',
-  3: process.env.IRONPAY_PRODUCT_VIP3 || 'lpvsvwo0wv',
+  1: process.env.IRONPAY_PRODUCT_VIP1!,
+  2: process.env.IRONPAY_PRODUCT_VIP2!,
+  3: process.env.IRONPAY_PRODUCT_VIP3!,
 };
 
 const PRICES: Record<number, number> = {

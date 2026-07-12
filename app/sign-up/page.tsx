@@ -33,7 +33,7 @@ function SignUpContent() {
           data: {
             full_name: name,
             ref_code: newUserRefCode,
-            referred_by: ref || '',
+            ...(ref ? { referred_by: ref } : {}),
             balance: 25.00,
             today_earnings: 0.00,
             total_income: 25.00,
