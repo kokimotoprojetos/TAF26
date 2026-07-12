@@ -5392,11 +5392,12 @@ export default function Taf26RendaPage() {
 
     // Award reward after 30 seconds of watch if not yet rewarded
     if (secondsElapsed >= 30 && !rewarded) {
-      setBalance((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
-      setTodayEarnings((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
-      setTotalIncome((prev) => parseFloat((prev + currentSong.reward).toFixed(2)));
+      const multipliedReward = parseFloat((currentSong.reward * getMultiplier()).toFixed(2));
+      setBalance((prev) => parseFloat((prev + multipliedReward).toFixed(2)));
+      setTodayEarnings((prev) => parseFloat((prev + multipliedReward).toFixed(2)));
+      setTotalIncome((prev) => parseFloat((prev + multipliedReward).toFixed(2)));
       setRewarded(true);
-      showToast(`Recompensa de R$ ${currentSong.reward.toFixed(2)} recebida!`, 'success');
+      showToast(`Recompensa de R$ ${multipliedReward.toFixed(2)} recebida!${vipLevel > 0 ? ` (VIP ${vipLevel} x${getMultiplier()})` : ''}`, 'success');
 
       // Mark current video as completed
       setVideoCompleted((prev) => {
@@ -6035,7 +6036,7 @@ export default function Taf26RendaPage() {
                         {/* Earnings notification bar */}
                         <div className="flex items-center gap-1 mt-1.5 text-[11px] text-[#1db954] font-medium bg-[#1db954]/5 px-2 py-0.5 rounded-md w-fit">
                           <DollarSign className="w-3 h-3" />
-                          <span>Recompensa: R$ {currentSong.reward.toFixed(2)} após 30s</span>
+                          <span>Recompensa: R$ {(currentSong.reward * getMultiplier()).toFixed(2)} após 30s{vipLevel > 0 ? ` (x${getMultiplier()})` : ''}</span>
                         </div>
                       </div>
                     </div>
@@ -6167,7 +6168,7 @@ export default function Taf26RendaPage() {
                               </span>
                             ) : (
                               <span className="text-[10px] font-bold text-emerald-400 bg-[#1db954]/10 px-2 py-1 rounded-full whitespace-nowrap">
-                                R$ {song.reward.toFixed(2)}
+                                R$ {(song.reward * getMultiplier()).toFixed(2)}
                               </span>
                             )}
                             
