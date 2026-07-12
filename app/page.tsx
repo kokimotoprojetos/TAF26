@@ -4927,9 +4927,7 @@ export default function Taf26RendaPage() {
   const [missions, setMissions] = useState<{ id: string; title: string; description: string; progress: number; target: number; reward: number; completed: boolean }[]>(getInitialMissions);
 
   // Withdrawal History
-  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([
-    { id: 'w-1', amount: 15.00, pixKey: '***.482.118-**', keyType: 'CPF', date: '08/07/2026 14:15', status: 'Concluído' },
-  ]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
 
   // --- AUDIO REFERENCING & ENGINE ---
   const playerRef = useRef<any>(null);
