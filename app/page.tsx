@@ -4818,12 +4818,49 @@ const songs: Song[] = [
 export default function Taf26RendaPage() {
   const [user, setUser] = useState<any>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
+  
+  // --- STATE ---
+  const [balance, setBalance] = useState<number>(25.00);
+  const [todayEarnings, setTodayEarnings] = useState<number>(0.00);
+  const [totalIncome, setTotalIncome] = useState<number>(25.00);
+  const [vipLevel, setVipLevel] = useState<number>(0); // 0 = Free, 1 = VIP Bronze, 2 = VIP Gold, 3 = VIP Diamond
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
+    const handleUserSession = (currentUser: any) => {
+      if (currentUser) {
+        const meta = currentUser.user_metadata || {};
+        
+        // Load initial states from metadata if present
+        if (meta.balance !== undefined) setBalance(parseFloat(meta.balance));
+        if (meta.today_earnings !== undefined) setTodayEarnings(parseFloat(meta.today_earnings));
+        if (meta.total_income !== undefined) setTotalIncome(parseFloat(meta.total_income));
+        if (meta.vip_level !== undefined) setVipLevel(parseInt(meta.vip_level));
+
+        setUser(currentUser);
+        isInitializedRef.current = true;
+
+        // Auto-generate referral code if missing
+        if (!meta.ref_code) {
+          const generatedRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+          supabase.auth.updateUser({
+            data: {
+              ...meta,
+              ref_code: generatedRefCode
+            }
+          }).then(({ data: updateData, error }) => {
+            if (!error && updateData?.user) {
+              setUser(updateData.user);
+            }
+          });
+        }
+      }
+    };
+
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setUser(session.user);
+        handleUserSession(session.user);
       } else {
         window.location.href = '/sign-in';
       }
@@ -4834,7 +4871,7 @@ export default function Taf26RendaPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        setUser(session.user);
+        handleUserSession(session.user);
       } else {
         window.location.href = '/sign-in';
       }
@@ -4842,12 +4879,6 @@ export default function Taf26RendaPage() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // --- STATE ---
-  const [balance, setBalance] = useState<number>(25.00);
-  const [todayEarnings, setTodayEarnings] = useState<number>(0.00);
-  const [totalIncome, setTotalIncome] = useState<number>(25.00);
-  const [vipLevel, setVipLevel] = useState<number>(0); // 0 = Free, 1 = VIP Bronze, 2 = VIP Gold, 3 = VIP Diamond
   const [isAppDownloaded, setIsAppDownloaded] = useState<boolean>(false);
   const [isDownloadingApp, setIsDownloadingApp] = useState<boolean>(false);
   
@@ -4928,6 +4959,66 @@ export default function Taf26RendaPage() {
 
   // Withdrawal History
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+
+  // Save balance, todayEarnings, totalIncome, and vipLevel to Supabase with debounce
+  useEffect(() => {
+    if (!user || !isInitializedRef.current) return;
+    const saveToSupabase = async () => {
+      const meta = user.user_metadata || {};
+      if (
+        meta.balance !== balance ||
+        meta.today_earnings !== todayEarnings ||
+        meta.total_income !== totalIncome ||
+        meta.vip_level !== vipLevel
+      ) {
+        try {
+          const { data: { user: updatedUser }, error } = await supabase.auth.updateUser({
+            data: {
+              ...meta,
+              balance,
+              today_earnings: todayEarnings,
+              total_income: totalIncome,
+              vip_level: vipLevel
+            }
+          });
+          if (!error && updatedUser) {
+            setUser(updatedUser);
+          }
+        } catch (err) {
+          console.error('Error auto-saving metadata to Supabase:', err);
+        }
+      }
+    };
+
+    const timer = setTimeout(() => {
+      saveToSupabase();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [balance, todayEarnings, totalIncome, vipLevel, user]);
+
+  // Fetch real referrals from backend API on footer tab switch or user change
+  useEffect(() => {
+    if (!user) return;
+    const refCode = user.user_metadata?.ref_code;
+    if (!refCode) return;
+
+    const fetchReferrals = async () => {
+      try {
+        const res = await fetch(`/api/user/referrals?refCode=${refCode}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.referrals) {
+            setReferrals(data.referrals);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching referrals:', err);
+      }
+    };
+
+    fetchReferrals();
+  }, [user, activeFooterTab]);
 
   // --- AUDIO REFERENCING & ENGINE ---
   const playerRef = useRef<any>(null);
@@ -5265,7 +5356,8 @@ export default function Taf26RendaPage() {
 
   // Copy referral link
   const copyReferralLink = () => {
-    const link = `https://taf26.site/invite?ref=user${Math.floor(1000 + Math.random() * 9000)}`;
+    const refCode = user?.user_metadata?.ref_code || `user${Math.floor(1000 + Math.random() * 9000)}`;
+    const link = `https://www.taf26.site/invite?ref=${refCode}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopiedLink(true);
       showToast('Link de convite copiado para a área de transferência!', 'success');
@@ -6125,7 +6217,7 @@ setTimeout(() => {
               {/* Copyable referral Link Box */}
               <div className="mt-4 bg-black/40 border border-zinc-800 rounded-xl p-2 flex items-center justify-between gap-2">
                 <span className="text-[10px] text-zinc-400 truncate text-left flex-1 max-w-[70%]">
-                  https://taf26.site/invite?ref=user5589
+                  {`https://www.taf26.site/invite?ref=${user?.user_metadata?.ref_code || 'carregando...'}`}
                 </span>
                 <button
                   id="copy-link-btn"
