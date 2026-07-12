@@ -4907,11 +4907,24 @@ export default function Taf26RendaPage() {
   const [supportInput, setSupportInput] = useState<string>('');
 
   // Daily Missions
-  const [missions, setMissions] = useState([
-    { id: 'm-1', title: 'Ouvir música por 5 minutos', description: 'Ouça qualquer faixa para ganhar bônus.', progress: 120, target: 300, reward: 5.00, completed: false },
-    { id: 'm-2', title: 'Convidar 3 amigos', description: 'Convide amigos usando seu link.', progress: 2, target: 3, reward: 10.00, completed: false },
-    { id: 'm-3', title: 'Ativar qualquer VIP', description: 'Aumente sua taxa de ganhos diários.', progress: 0, target: 1, reward: 15.00, completed: false },
-  ]);
+  const getInitialMissions = () => {
+    const today = new Date().toLocaleDateString('pt-BR');
+    const lastReset = typeof window !== 'undefined' ? localStorage.getItem('missionResetDate') : null;
+    const savedMissions = typeof window !== 'undefined' ? localStorage.getItem('missions') : null;
+    if (savedMissions && lastReset === today) {
+      return JSON.parse(savedMissions);
+    }
+    // New day or first visit — reset
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('missionResetDate', today);
+    }
+    return [
+      { id: 'm-1', title: 'Ouvir música por 5 minutos', description: 'Ouça qualquer faixa para ganhar bônus.', progress: 0, target: 300, reward: 5.00, completed: false },
+      { id: 'm-2', title: 'Convidar 3 amigos', description: 'Convide amigos usando seu link.', progress: 0, target: 3, reward: 10.00, completed: false },
+      { id: 'm-3', title: 'Ativar qualquer VIP', description: 'Aumente sua taxa de ganhos diários.', progress: 0, target: 1, reward: 15.00, completed: false },
+    ];
+  };
+  const [missions, setMissions] = useState<{ id: string; title: string; description: string; progress: number; target: number; reward: number; completed: boolean }[]>(getInitialMissions);
 
   // Withdrawal History
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([
@@ -5137,6 +5150,53 @@ export default function Taf26RendaPage() {
     }
     return () => clearInterval(interval);
   }, [isPlaying, currentSongIndex, vipLevel]);
+
+  // Sync m-2 mission with real referrals
+  useEffect(() => {
+    const activeCount = referrals.filter(r => r.status === 'Ativo').length;
+    setMissions((prev) =>
+      prev.map((m) => {
+        if (m.id === 'm-2') {
+          const newProgress = Math.min(activeCount, m.target);
+          const completed = newProgress >= m.target;
+          if (completed && !m.completed) {
+            setTimeout(() => {
+              showToast(`Missão de Convites Concluída! Ganhou R$ ${m.reward.toFixed(2)}`, 'success');
+              setBalance((b) => b + m.reward);
+              setTodayEarnings((t) => t + m.reward);
+            }, 500);
+          }
+          return { ...m, progress: newProgress, completed };
+        }
+        return m;
+      })
+    );
+  }, [referrals]);
+
+  // Persist missions to localStorage
+  useEffect(() => {
+    localStorage.setItem('missions', JSON.stringify(missions));
+  }, [missions]);
+
+  // Check for day change and reset missions
+  useEffect(() => {
+    const checkDayChange = () => {
+      const today = new Date().toLocaleDateString('pt-BR');
+      const lastReset = localStorage.getItem('missionResetDate');
+      if (lastReset !== today) {
+        localStorage.setItem('missionResetDate', today);
+        setMissions([
+          { id: 'm-1', title: 'Ouvir música por 5 minutos', description: 'Ouça qualquer faixa para ganhar bônus.', progress: 0, target: 300, reward: 5.00, completed: false },
+          { id: 'm-2', title: 'Convidar 3 amigos', description: 'Convide amigos usando seu link.', progress: 0, target: 3, reward: 10.00, completed: false },
+          { id: 'm-3', title: 'Ativar qualquer VIP', description: 'Aumente sua taxa de ganhos diários.', progress: 0, target: 1, reward: 15.00, completed: false },
+        ]);
+        showToast('Missões diárias resetadas! Novos desafios disponíveis.', 'info');
+      }
+    };
+    checkDayChange();
+    const interval = setInterval(checkDayChange, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle rewards and mission tracking based on elapsed seconds
   useEffect(() => {
