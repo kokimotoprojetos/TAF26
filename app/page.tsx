@@ -4976,22 +4976,28 @@ export default function Taf26RendaPage() {
         const serverToday = parseFloat(meta.today_earnings) || 0;
         const serverTotal = parseFloat(meta.total_income) || 0;
         
+        // If server value is higher, use it (never overwrite a server-side credit)
+        const finalBalance = serverBalance > balance ? serverBalance : balance;
+        const finalToday = serverToday > todayEarnings ? serverToday : todayEarnings;
+        const finalTotal = serverTotal > totalIncome ? serverTotal : totalIncome;
+        
         if (serverBalance > balance) setBalance(serverBalance);
         if (serverToday > todayEarnings) setTodayEarnings(serverToday);
         if (serverTotal > totalIncome) setTotalIncome(serverTotal);
         
+        // Only save if values actually differ from what server has
         if (
-          meta.balance !== balance ||
-          meta.today_earnings !== todayEarnings ||
-          meta.total_income !== totalIncome ||
+          meta.balance !== finalBalance ||
+          meta.today_earnings !== finalToday ||
+          meta.total_income !== finalTotal ||
           meta.vip_level !== vipLevel
         ) {
           const { data: { user: updatedUser }, error } = await supabase.auth.updateUser({
             data: {
               ...meta,
-              balance,
-              today_earnings: todayEarnings,
-              total_income: totalIncome,
+              balance: finalBalance,
+              today_earnings: finalToday,
+              total_income: finalTotal,
               vip_level: vipLevel
             }
           });
