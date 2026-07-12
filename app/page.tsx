@@ -5011,8 +5011,14 @@ export default function Taf26RendaPage() {
       if (!el) return false;
       if (!(window as any).YT || !(window as any).YT.Player) return false;
 
+      // Only destroy if the old player still has a valid DOM element
       if (playerRef.current && playerRef.current.destroy) {
-        playerRef.current.destroy();
+        try {
+          const oldEl = playerRef.current.getIframe && playerRef.current.getIframe();
+          if (oldEl && document.body.contains(oldEl)) {
+            playerRef.current.destroy();
+          }
+        } catch {}
         playerRef.current = null;
       }
 
@@ -5069,7 +5075,7 @@ export default function Taf26RendaPage() {
     };
 
     tryCreate();
-  }, [activeTab]);
+  }, [activeTab, activeFooterTab]);
 
   // Load new video when current song changes
   useEffect(() => {
