@@ -4840,6 +4840,19 @@ export default function Taf26RendaPage() {
         setUser(currentUser);
         isInitializedRef.current = true;
 
+        // Check VIP expiration from server
+        fetch(`/api/user/vip?userId=${currentUser.id}`)
+          .then(res => {
+            if (res.ok) return res.json();
+            throw new Error('Failed to fetch VIP status');
+          })
+          .then(vipData => {
+            if (vipData.vipLevel !== undefined) {
+              setVipLevel(vipData.vipLevel);
+            }
+          })
+          .catch(err => console.error("Erro ao verificar expiração do VIP:", err));
+
         // Auto-generate referral code if missing
         if (!meta.ref_code) {
           const generatedRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
