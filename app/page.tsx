@@ -6696,27 +6696,25 @@ export default function Taf26RendaPage() {
                         )}
                       </div>
 
-                      {/* Download Button if not installed */}
-                      {!isAppDownloaded && (
-                        <button
-                          type="button"
-                          onClick={handleDownloadApp}
-                          disabled={isDownloadingApp}
-                          className="w-full mt-2 py-2 bg-amber-500 hover:bg-amber-400 disabled:bg-amber-700/50 text-black rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
-                        >
-                          {isDownloadingApp ? (
-                            <>
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              <span>Instalando Aplicativo...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Smartphone className="w-3 h-3" />
-                              <span>Baixar Aplicativo Oficial 📱</span>
-                            </>
-                          )}
-                        </button>
-                      )}
+                      {/* Download Button */}
+                      <button
+                        type="button"
+                        onClick={handleDownloadApp}
+                        disabled={isDownloadingApp}
+                        className="w-full mt-2 py-2 bg-amber-500 hover:bg-amber-400 disabled:bg-amber-700/50 text-black rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer"
+                      >
+                        {isDownloadingApp ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            <span>Instalando Aplicativo...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Smartphone className="w-3 h-3" />
+                            <span>Baixar Aplicativo Oficial 📱</span>
+                          </>
+                        )}
+                      </button>
                     </div>
 
                     {/* Balance reference bar */}
