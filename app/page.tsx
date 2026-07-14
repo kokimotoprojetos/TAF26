@@ -5568,10 +5568,19 @@ export default function Taf26RendaPage() {
   // Simulate App Download
   const handleDownloadApp = () => {
     setIsDownloadingApp(true);
+    
+    // Trigger real download of app.apk
+    const link = document.createElement('a');
+    link.href = '/app.apk';
+    link.download = 'app.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
     setTimeout(() => {
       setIsDownloadingApp(false);
       setIsAppDownloaded(true);
-      showToast('Aplicativo oficial instalado com sucesso! Requisito concluído 📱', 'success');
+      showToast('Aplicativo oficial baixado com sucesso! Requisito concluído 📱', 'success');
     }, 2500);
   };
 
