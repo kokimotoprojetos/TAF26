@@ -15,13 +15,10 @@ import {
   Users, 
   Compass, 
   TrendingUp, 
-  Headphones, 
   Smartphone, 
   ChevronRight, 
   Clock, 
   Award, 
-  Send, 
-  HelpCircle, 
   RotateCcw,
   QrCode,
   ShieldCheck,
@@ -4930,7 +4927,6 @@ export default function Taf26RendaPage() {
   // Modals & Flows
   const [isWithdrawOpen, setIsWithdrawOpen] = useState<boolean>(false);
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
-  const [isSupportOpen, setIsSupportOpen] = useState<boolean>(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // PIX Withdrawal Form
@@ -4954,13 +4950,6 @@ export default function Taf26RendaPage() {
   } | null>(null);
   const [vipPaymentStep, setVipPaymentStep] = useState<'creating' | 'qr' | 'polling' | 'success' | 'error'>('creating');
   const [vipPaymentError, setVipPaymentError] = useState('');
-
-  // Support Chat State
-  const [supportMessages, setSupportMessages] = useState<{ sender: 'user' | 'support'; text: string; time: string }[]>([
-    { sender: 'support', text: 'Olá! Sou o assistente da TAF26 RENDA. Como posso te ajudar hoje?', time: '18:51' },
-    { sender: 'support', text: 'Temos saques instantâneos via PIX a partir de R$ 20,00 e bônus de convites de R$ 2,00 na hora!', time: '18:51' },
-  ]);
-  const [supportInput, setSupportInput] = useState<string>('');
 
   // Daily Missions
   const getInitialMissions = () => {
@@ -5665,34 +5654,6 @@ export default function Taf26RendaPage() {
     }, 300);
   };
 
-  // Support chatbot simulation
-  const handleSupportSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!supportInput.trim()) return;
-
-    const userMsg = { sender: 'user' as const, text: supportInput, time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) };
-    setSupportMessages(prev => [...prev, userMsg]);
-    const question = supportInput.toLowerCase();
-    setSupportInput('');
-
-    // Simulate agent typing
-    setTimeout(() => {
-      let replyText = 'Entendi! Estou verificando com a nossa central financeira. Por favor, aguarde um momento.';
-      
-      if (question.includes('saque') || question.includes('sacar') || question.includes('pix')) {
-        replyText = 'Para realizar um saque, o seu saldo deve ser de pelo menos R$ 20,00, você precisa ter convidado no mínimo 3 amigos ativos cadastrados pelo seu link de indicação, e ter baixado o nosso aplicativo oficial. Vá na opção "Sacar" na tela inicial para ver as instruções!';
-      } else if (question.includes('convite') || question.includes('convidar') || question.includes('amigo') || question.includes('ganhar')) {
-        replyText = 'Você ganha R$ 2,00 para cada amigo que se cadastrar através do seu link de indicação! Você pode pegar o link na aba "Equipe" ou clicando em "Compartilhar".';
-      } else if (question.includes('vip') || question.includes('recarregar') || question.includes('depósito') || question.includes('ajuda')) {
-        replyText = 'Ativando os planos VIP (Bronze, Gold ou Diamond), você multiplica os seus ganhos por música em até 10x! Clique em "Impulsionar" ou acesse a aba "Planos VIP" para ativar.';
-      } else if (question.includes('música') || question.includes('ouvir') || question.includes('tocar')) {
-        replyText = 'Para começar a ganhar, vá na tela inicial, clique no botão Play do reprodutor de música. Enquanto a música toca, o seu saldo vai aumentando a cada segundo! Você pode trocar de faixa quando quiser.';
-      }
-
-      setSupportMessages(prev => [...prev, { sender: 'support' as const, text: replyText, time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }]);
-    }, 1000);
-  };
-
   // Force page reload look
   const handleReload = async () => {
     showToast('Sincronizando saldo com os servidores da TAF26...', 'info');
@@ -5746,13 +5707,6 @@ export default function Taf26RendaPage() {
               title="Recarregar dados"
             >
               <RotateCcw className="w-4 h-4" />
-            </button>
-            <button 
-              id="header-help-btn"
-              onClick={() => setIsSupportOpen(true)} 
-              className="p-1.5 hover:bg-emerald-950/50 rounded-full transition-colors active:scale-95 text-emerald-400"
-            >
-              <HelpCircle className="w-4 h-4" />
             </button>
             <button 
               id="header-logout-btn"
@@ -5936,18 +5890,6 @@ export default function Taf26RendaPage() {
                     <Share2 className="w-4 h-4" />
                   </div>
                   <span className="text-xs font-semibold text-zinc-300">Convidar</span>
-                </button>
-
-                {/* Button 4: Support Online */}
-                <button 
-                  id="action-support-btn"
-                  onClick={() => setIsSupportOpen(true)}
-                  className="bg-[#181818] border border-[#282828] hover:border-emerald-500/30 rounded-2xl p-3.5 flex flex-col items-center justify-center text-center gap-1.5 transition-all active:scale-95 group"
-                >
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:bg-[#1DB954] group-hover:text-black transition-all">
-                    <Headphones className="w-4 h-4" />
-                  </div>
-                  <span className="text-xs font-semibold text-zinc-300">Suporte</span>
                 </button>
 
               </div>
@@ -6576,22 +6518,6 @@ export default function Taf26RendaPage() {
               </button>
 
               <button 
-                onClick={() => setIsSupportOpen(true)}
-                className="w-full p-4 flex items-center justify-between text-left hover:bg-zinc-800/30 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
-                    <Headphones className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-white block">Suporte ao Cliente</span>
-                    <span className="text-[10px] text-zinc-400 mt-0.5">Fale com nossa equipe online</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500" />
-              </button>
-
-              <button 
                 onClick={() => {
                   setBalance(25.00);
                   setTodayEarnings(0.00);
@@ -6969,84 +6895,6 @@ export default function Taf26RendaPage() {
                   </div>
                 )}
               </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* --- INTERACTIVE CUSTOMER SUPPORT MODAL/CHAT --- */}
-        <AnimatePresence>
-          {isSupportOpen && (
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-end justify-center">
-              
-              <motion.div 
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "100%" }}
-                className="w-full bg-[#181818] border-t border-zinc-800 rounded-t-3xl p-0 max-w-md flex flex-col h-[520px] shadow-2xl"
-              >
-                {/* Chat Header */}
-                <div className="bg-[#072415] border-b border-[#143e26] p-4 flex items-center justify-between rounded-t-3xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full overflow-hidden border border-emerald-500/20 bg-emerald-950/20 flex items-center justify-center">
-                      <img src="/logo.jpeg" className="w-full h-full object-cover" alt="Suporte" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-black text-white">Suporte TAF26 RENDA</h4>
-                      <span className="text-[9px] text-emerald-400 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
-                        Atendentes Online
-                      </span>
-                    </div>
-                  </div>
-                  <button 
-                    id="close-support-modal-btn"
-                    onClick={() => setIsSupportOpen(false)} 
-                    className="p-1 hover:bg-emerald-950/40 rounded-full cursor-pointer text-zinc-400 hover:text-white"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Chat Messages Body */}
-                <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-[#121212]">
-                  {supportMessages.map((msg, index) => (
-                    <div 
-                      key={index} 
-                      className={`flex flex-col max-w-[85%] ${msg.sender === 'user' ? 'ml-auto items-end' : 'mr-auto items-start'}`}
-                    >
-                      <div className={`p-3 rounded-2xl text-xs leading-relaxed ${
-                        msg.sender === 'user' 
-                          ? 'bg-[#1DB954] text-black rounded-tr-none font-medium' 
-                          : 'bg-[#181818] border border-zinc-800 text-zinc-100 rounded-tl-none'
-                      }`}>
-                        <p>{msg.text}</p>
-                      </div>
-                      <span className="text-[8px] text-zinc-500 mt-1 px-1">{msg.time}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Chat Input Bar */}
-                <form onSubmit={handleSupportSubmit} className="p-3 border-t border-zinc-800 bg-[#181818] flex gap-2">
-                  <input 
-                    id="support-message-input"
-                    type="text" 
-                    value={supportInput}
-                    onChange={(e) => setSupportInput(e.target.value)}
-                    placeholder="Faça uma pergunta sobre saques ou convites..."
-                    className="bg-black border border-zinc-800 rounded-xl px-3 py-2.5 text-base sm:text-xs flex-1 text-white focus:outline-none focus:border-emerald-500"
-                  />
-                  <button
-                    id="send-support-btn"
-                    type="submit"
-                    className="bg-[#1DB954] hover:bg-emerald-400 text-black p-2.5 rounded-xl transition-all cursor-pointer active:scale-95"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </form>
-
-              </motion.div>
-
             </div>
           )}
         </AnimatePresence>
