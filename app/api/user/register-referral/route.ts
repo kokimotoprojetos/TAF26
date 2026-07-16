@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAdmin = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
-async function getAllUsers() {
+function assertSupabase() {
+  if (!supabaseAdmin) {
+    throw new Error('Supabase não configurado. Verifique NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY');
+  }
+  return supabaseAdmin;
+}
+
+async function getAllUsers(sb: any) {
   const allUsers: any[] = [];
   let page = 1;
   const perPage = 1000;
   
   while (true) {
-    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+    const { data, error } = await sb.auth.admin.listUsers({
       perPage,
       page,
     });
@@ -24,7 +30,6 @@ async function getAllUsers() {
     if (data.users.length < perPage) break;
     page++;
     
-    // Safety limit: max 10 pages (10,000 users)
     if (page > 10) break;
   }
   
@@ -33,6 +38,7 @@ async function getAllUsers() {
 
 export async function POST(req: Request) {
   try {
+    const sb = assertSupabase();
     const body = await req.json();
     const { newUserId, referredBy } = body;
 
@@ -43,9 +49,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. Fetch the newly registered user (B)
     const { data: { user: newUser }, error: newUserError } =
-      await supabaseAdmin.auth.admin.getUserById(newUserId);
+      await sb.auth.admin.getUserById(newUserId);
 
     if (newUserError || !newUser) {
       return NextResponse.json(
@@ -54,10 +59,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // Ensure the new user metadata has the referred_by property set
     const newUserMetadata = newUser.user_metadata || {};
     if (newUserMetadata.referred_by !== referredBy) {
-      await supabaseAdmin.auth.admin.updateUserById(newUserId, {
+      await sb.auth.admin.updateUserById(newUserId, {
         user_metadata: {
           ...newUserMetadata,
           referred_by: referredBy,
@@ -65,8 +69,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Find the referrer (A) who has user_metadata.ref_code === referredBy
-    const allUsers = await getAllUsers();
+    const allUsers = await getAllUsers(sb);
 
     const referrer = allUsers.find(
       (u) => u.user_metadata?.ref_code === referredBy
@@ -80,7 +83,6 @@ export async function POST(req: Request) {
       });
     }
 
-    // 3. Credit the referrer with R$ 2.00
     const referrerMetadata = referrer.user_metadata || {};
     const oldBalance = referrerMetadata.balance !== undefined ? parseFloat(referrerMetadata.balance) : 25.00;
     const oldTotalIncome = referrerMetadata.total_income !== undefined ? parseFloat(referrerMetadata.total_income) : 25.00;
@@ -90,7 +92,7 @@ export async function POST(req: Request) {
     const newTotalIncome = parseFloat((oldTotalIncome + 2.00).toFixed(2));
     const newTodayEarnings = parseFloat((oldTodayEarnings + 2.00).toFixed(2));
 
-    await supabaseAdmin.auth.admin.updateUserById(referrer.id, {
+    await sb.auth.admin.updateUserById(referrer.id, {
       user_metadata: {
         ...referrerMetadata,
         balance: newBalance,
@@ -108,9 +110,7 @@ export async function POST(req: Request) {
     });
   } catch (err: any) {
     console.error('Error registering referral credit:', err);
-    return NextResponse.json(
-      { error: 'Erro interno ao processar crédito de convite' },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : 'Erro interno ao processar crédito de convite';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

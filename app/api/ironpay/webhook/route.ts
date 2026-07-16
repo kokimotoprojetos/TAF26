@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-// Skip DB insert if table doesn't exist yet
-const SAFE_DB = false; // flip to true after creating ironpay_transactions table
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAdmin = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 export async function POST(req: Request) {
   try {
@@ -34,6 +30,11 @@ export async function POST(req: Request) {
       vipLevel = 1;
     }
 
+    if (!supabaseAdmin) {
+      console.warn('Supabase não configurado no webhook');
+      return NextResponse.json({ received: true });
+    }
+
     if (vipLevel > 0 && customerEmail) {
       const { data: users } = await supabaseAdmin.auth.admin.listUsers();
       const user = users?.users.find(u => u.email === customerEmail);
@@ -53,22 +54,6 @@ export async function POST(req: Request) {
 
         console.log(`VIP ${vipLevel} activated for user ${user.id} until ${expiresAt.toISOString()}`);
       }
-
-      // Optional: save to ironpay_transactions table (uncomment after creating the table)
-      // const { error: upsertError } = await supabaseAdmin
-      //   .from('ironpay_transactions')
-      //   .insert({
-      //     transaction_hash: transactionHash,
-      //     amount,
-      //     status: 'paid',
-      //     vip_level: vipLevel,
-      //     customer_email: customerEmail,
-      //     customer_name: customerName,
-      //     raw_data: data,
-      //   });
-      // if (upsertError) {
-      //   console.error('Error saving transaction:', upsertError);
-      // }
     }
 
     return NextResponse.json({ received: true });

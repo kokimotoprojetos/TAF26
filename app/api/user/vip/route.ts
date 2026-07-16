@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAdmin = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+
+function assertSupabase() {
+  if (!supabaseAdmin) {
+    throw new Error('Supabase não configurado. Verifique NEXT_PUBLIC_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY');
+  }
+  return supabaseAdmin;
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -15,7 +21,8 @@ export async function GET(req: Request) {
   }
 
   try {
-    const { data: { user }, error } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const sb = assertSupabase();
+    const { data: { user }, error } = await sb.auth.admin.getUserById(userId);
 
     if (error || !user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
@@ -33,12 +40,14 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     console.error('VIP check error:', err);
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Erro interno';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
+    const sb = assertSupabase();
     const body = await req.json();
     const { userId, vipLevel } = body;
 
@@ -46,7 +55,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'userId e vipLevel são obrigatórios' }, { status: 400 });
     }
 
-    const { data: { user }, error } = await supabaseAdmin.auth.admin.getUserById(userId);
+    const { data: { user }, error } = await sb.auth.admin.getUserById(userId);
 
     if (error || !user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
@@ -55,7 +64,7 @@ export async function POST(req: Request) {
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 1);
 
-    await supabaseAdmin.auth.admin.updateUserById(userId, {
+    await sb.auth.admin.updateUserById(userId, {
       user_metadata: {
         ...user.user_metadata,
         vip_level: vipLevel,
@@ -72,6 +81,7 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error('VIP update error:', err);
-    return NextResponse.json({ error: 'Erro interno' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Erro interno';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
