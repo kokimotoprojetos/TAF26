@@ -51,6 +51,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [copiedSql, setCopiedSql] = useState(false);
+  const [loadError, setLoadError] = useState('');
 
   // Edit modal state
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
@@ -83,16 +84,19 @@ export default function AdminPage() {
       const res = await fetch('/api/admin/users', {
         headers: { 'x-admin-password': pass }
       });
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         setUsers(data.users || []);
         setStats(data.stats || { totalUsers: 0, apkClicks: 0, tableMissing: false });
         setIsAuthenticated(true);
+        setLoadError('');
       } else {
         localStorage.removeItem('admin_pass');
+        setLoadError(data.error || `Erro HTTP ${res.status}`);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      setLoadError('Erro de rede: ' + (e?.message || 'desconhecido'));
     } finally {
       setIsLoading(false);
     }
@@ -109,19 +113,20 @@ export default function AdminPage() {
         headers: { 'x-admin-password': password }
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        const data = await res.json();
         setUsers(data.users || []);
         setStats(data.stats || { totalUsers: 0, apkClicks: 0, tableMissing: false });
         setIsAuthenticated(true);
+        setLoadError('');
         localStorage.setItem('admin_pass', password);
         showToast('Login realizado com sucesso!', 'success');
       } else {
-        const data = await res.json();
-        setLoginError(data.error || 'Senha incorreta');
+        setLoginError(data.error || `Erro HTTP ${res.status}: Verifique as variáveis de ambiente na Vercel (SUPABASE_SERVICE_ROLE_KEY)`);
       }
     } catch (err: any) {
-      setLoginError('Erro de conexão com o servidor');
+      setLoginError('Erro de conexão com o servidor: ' + (err?.message || ''));
     } finally {
       setIsLoggingIn(false);
     }
@@ -136,20 +141,25 @@ export default function AdminPage() {
 
   const handleRefresh = async () => {
     setIsLoading(true);
+    setLoadError('');
     try {
       const res = await fetch('/api/admin/users', {
         headers: { 'x-admin-password': password }
       });
+      const data = await res.json();
       if (res.ok) {
-        const data = await res.json();
         setUsers(data.users || []);
         setStats(data.stats || { totalUsers: 0, apkClicks: 0, tableMissing: false });
         showToast('Dados atualizados!');
       } else {
-        showToast('Erro ao atualizar dados', 'error');
+        const errMsg = data.error || `Erro HTTP ${res.status}`;
+        setLoadError(errMsg);
+        showToast('Erro: ' + errMsg, 'error');
       }
-    } catch (e) {
-      showToast('Erro de rede', 'error');
+    } catch (e: any) {
+      const errMsg = 'Erro de rede: ' + (e?.message || '');
+      setLoadError(errMsg);
+      showToast(errMsg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -336,6 +346,24 @@ export default function AdminPage() {
               </button>
             </div>
           </div>
+
+          {/* Error Banner */}
+          {loadError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl bg-red-950/30 border border-red-900/50 text-red-300 text-xs font-medium flex items-start gap-3"
+            >
+              <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-black text-red-200">Erro ao carregar usuários</p>
+                <p className="text-red-400 font-mono break-all">{loadError}</p>
+                <p className="text-zinc-500 mt-2">
+                  ⚠️ Verifique se a variável <span className="text-amber-400 font-mono">SUPABASE_SERVICE_ROLE_KEY</span> está configurada corretamente nas <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="text-blue-400 underline">configurações de ambiente da Vercel</a>.
+                </p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
