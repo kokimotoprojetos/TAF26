@@ -1,11 +1,14 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-const supabaseAdmin = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
-
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin26';
+
+function getSupabaseAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  if (!supabaseUrl || !supabaseKey) return null;
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 function verifyAdmin(req: Request): boolean {
   const password = req.headers.get('x-admin-password');
@@ -30,7 +33,6 @@ async function getAllUsers(sb: any) {
     if (data.users.length < perPage) break;
     page++;
     
-    // Limit to 10k users for safety
     if (page > 10) break;
   }
   
@@ -38,8 +40,16 @@ async function getAllUsers(sb: any) {
 }
 
 export async function GET(req: Request) {
+  const supabaseAdmin = getSupabaseAdmin();
+
   if (!supabaseAdmin) {
-    return NextResponse.json({ error: 'Supabase não configurado' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Supabase não configurado. Variáveis NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY estão faltando.',
+      envCheck: {
+        hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      }
+    }, { status: 500 });
   }
 
   if (!verifyAdmin(req)) {
@@ -50,7 +60,6 @@ export async function GET(req: Request) {
     const users = await getAllUsers(supabaseAdmin);
     
     let apkClicks = 0;
-    // Format users for the admin list
     const formattedUsers = users.map((u) => {
       const meta = u.user_metadata || {};
       const clicks = parseInt(meta.apk_clicks || '0') || 0;
@@ -81,11 +90,13 @@ export async function GET(req: Request) {
     });
   } catch (err: any) {
     console.error('Erro na rota de listagem de usuários do admin:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message, stack: err.stack }, { status: 500 });
   }
 }
 
 export async function PUT(req: Request) {
+  const supabaseAdmin = getSupabaseAdmin();
+
   if (!supabaseAdmin) {
     return NextResponse.json({ error: 'Supabase não configurado' }, { status: 500 });
   }
@@ -102,7 +113,6 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'userId é obrigatório' }, { status: 400 });
     }
 
-    // Fetch existing user metadata
     const { data: { user }, error: getError } = await supabaseAdmin.auth.admin.getUserById(userId);
     if (getError || !user) {
       return NextResponse.json({ error: 'Usuário não encontrado' }, { status: 404 });
@@ -110,7 +120,6 @@ export async function PUT(req: Request) {
 
     const currentMetadata = user.user_metadata || {};
     
-    // Merge new metadata fields
     const updatedMetadata = {
       ...currentMetadata,
       balance: balance !== undefined ? balance.toString() : (currentMetadata.balance || '0'),
