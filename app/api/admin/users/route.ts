@@ -49,9 +49,12 @@ export async function GET(req: Request) {
   try {
     const users = await getAllUsers(supabaseAdmin);
     
+    let apkClicks = 0;
     // Format users for the admin list
     const formattedUsers = users.map((u) => {
       const meta = u.user_metadata || {};
+      const clicks = parseInt(meta.apk_clicks || '0') || 0;
+      apkClicks += clicks;
       return {
         id: u.id,
         email: u.email || 'Sem email',
@@ -63,25 +66,9 @@ export async function GET(req: Request) {
         vipLevel: parseInt(meta.vip_level) || 0,
         referredBy: meta.referred_by || '',
         referralCode: meta.referral_code || '',
+        apkClicks: clicks,
       };
     });
-
-    // Also fetch apk click statistics
-    let apkClicks = 0;
-    let tableMissing = false;
-    try {
-      const { count, error } = await supabaseAdmin
-        .from('apk_clicks')
-        .select('*', { count: 'exact', head: true });
-        
-      if (error) {
-        tableMissing = error.code === 'PGRST116' || error.message.includes('relation') || error.message.includes('does not exist');
-      } else {
-        apkClicks = count || 0;
-      }
-    } catch (e) {
-      tableMissing = true;
-    }
 
     return NextResponse.json({
       success: true,
@@ -89,7 +76,7 @@ export async function GET(req: Request) {
       stats: {
         totalUsers: formattedUsers.length,
         apkClicks,
-        tableMissing,
+        tableMissing: false,
       }
     });
   } catch (err: any) {

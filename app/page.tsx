@@ -5559,7 +5559,11 @@ export default function Taf26RendaPage() {
     setIsDownloadingApp(true);
     
     // Register click via API
-    fetch('/api/apk-click', { method: 'POST' }).catch((err) => {
+    fetch('/api/apk-click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user?.id })
+    }).catch((err) => {
       console.error('Erro ao registrar clique de download:', err);
     });
     
