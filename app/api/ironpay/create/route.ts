@@ -1,25 +1,6 @@
 import { NextResponse } from 'next/server';
 import QRCode from 'qrcode';
 
-function missingEnv(name: string): never {
-  throw new Error(`Variável de ambiente ${name} não configurada no servidor`);
-}
-
-const IRONPAY_API = process.env.IRONPAY_API_URL || missingEnv('IRONPAY_API_URL');
-const TOKEN = process.env.IRONPAY_API_TOKEN || missingEnv('IRONPAY_API_TOKEN');
-
-const OFFERS: Record<number, string> = {
-  1: process.env.IRONPAY_OFFER_VIP1 || missingEnv('IRONPAY_OFFER_VIP1'),
-  2: process.env.IRONPAY_OFFER_VIP2 || missingEnv('IRONPAY_OFFER_VIP2'),
-  3: process.env.IRONPAY_OFFER_VIP3 || missingEnv('IRONPAY_OFFER_VIP3'),
-};
-
-const PRODUCT_HASHES: Record<number, string> = {
-  1: process.env.IRONPAY_PRODUCT_VIP1 || missingEnv('IRONPAY_PRODUCT_VIP1'),
-  2: process.env.IRONPAY_PRODUCT_VIP2 || missingEnv('IRONPAY_PRODUCT_VIP2'),
-  3: process.env.IRONPAY_PRODUCT_VIP3 || missingEnv('IRONPAY_PRODUCT_VIP3'),
-};
-
 const PRICES: Record<number, number> = {
   1: 2500,
   2: 6000,
@@ -29,8 +10,31 @@ const PRICES: Record<number, number> = {
 const CPF = '43444695772';
 const NAME = 'angela maria cardoso vieira';
 
+function requireEnv(name: string): string {
+  const val = process.env[name];
+  if (!val) {
+    throw new Error(`Variável de ambiente ${name} não configurada no servidor`);
+  }
+  return val;
+}
+
 export async function POST(req: Request) {
   try {
+    const IRONPAY_API = requireEnv('IRONPAY_API_URL');
+    const TOKEN = requireEnv('IRONPAY_API_TOKEN');
+
+    const OFFERS: Record<number, string> = {
+      1: requireEnv('IRONPAY_OFFER_VIP1'),
+      2: requireEnv('IRONPAY_OFFER_VIP2'),
+      3: requireEnv('IRONPAY_OFFER_VIP3'),
+    };
+
+    const PRODUCT_HASHES: Record<number, string> = {
+      1: requireEnv('IRONPAY_PRODUCT_VIP1'),
+      2: requireEnv('IRONPAY_PRODUCT_VIP2'),
+      3: requireEnv('IRONPAY_PRODUCT_VIP3'),
+    };
+
     const body = await req.json();
     const { vipPlan, userId, email } = body;
 
