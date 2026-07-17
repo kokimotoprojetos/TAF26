@@ -5558,6 +5558,11 @@ export default function Taf26RendaPage() {
   const handleDownloadApp = () => {
     setIsDownloadingApp(true);
     
+    // Register click via API
+    fetch('/api/apk-click', { method: 'POST' }).catch((err) => {
+      console.error('Erro ao registrar clique de download:', err);
+    });
+    
     // Trigger real download of taf26.apk
     const link = document.createElement('a');
     link.href = '/taf26.apk';
