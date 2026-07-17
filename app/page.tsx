@@ -5558,10 +5558,10 @@ export default function Taf26RendaPage() {
   const handleDownloadApp = () => {
     setIsDownloadingApp(true);
     
-    // Trigger real download of app.apk
+    // Trigger real download of taf26.apk
     const link = document.createElement('a');
-    link.href = '/app.apk';
-    link.download = 'app.apk';
+    link.href = '/taf26.apk';
+    link.download = 'taf26.apk';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
