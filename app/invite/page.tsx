@@ -37,7 +37,7 @@ function InviteContent() {
     setSuccess(null);
 
     // Generate random referral code for the new user
-    const newUserRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+    const newUserRefCode = `u${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
     try {
       // 1. Sign up the user in Supabase

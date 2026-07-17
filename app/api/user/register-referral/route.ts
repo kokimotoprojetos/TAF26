@@ -42,7 +42,9 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { newUserId, referredBy } = body;
 
-    if (!newUserId || !referredBy) {
+    const normalizedReferredBy = (referredBy || '').trim().toUpperCase();
+
+    if (!newUserId || !normalizedReferredBy) {
       return NextResponse.json(
         { error: 'newUserId e referredBy são obrigatórios' },
         { status: 400 }
@@ -60,11 +62,11 @@ export async function POST(req: Request) {
     }
 
     const newUserMetadata = newUser.user_metadata || {};
-    if (newUserMetadata.referred_by !== referredBy) {
+    if ((newUserMetadata.referred_by || '').trim().toUpperCase() !== normalizedReferredBy) {
       await sb.auth.admin.updateUserById(newUserId, {
         user_metadata: {
           ...newUserMetadata,
-          referred_by: referredBy,
+          referred_by: normalizedReferredBy,
         },
       });
     }
@@ -72,7 +74,7 @@ export async function POST(req: Request) {
     const allUsers = await getAllUsers(sb);
 
     const referrer = allUsers.find(
-      (u) => u.user_metadata?.ref_code === referredBy
+      (u) => (u.user_metadata?.ref_code || '').trim().toUpperCase() === normalizedReferredBy
     );
 
     if (!referrer) {

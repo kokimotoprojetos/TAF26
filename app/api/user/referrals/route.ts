@@ -33,7 +33,7 @@ async function getAllUsers() {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const refCode = searchParams.get('refCode');
+  const refCode = (searchParams.get('refCode') || '').trim().toUpperCase();
 
   if (!refCode) {
     return NextResponse.json({ error: 'refCode é obrigatório' }, { status: 400 });
@@ -43,8 +43,15 @@ export async function GET(req: Request) {
     const allUsers = await getAllUsers();
 
     const referralUsers = allUsers.filter(
-      (u) => u.user_metadata?.referred_by === refCode
+      (u) => {
+        const referred = (u.user_metadata?.referred_by || '').trim().toUpperCase();
+        return referred === refCode;
+      }
     );
+
+    if (referralUsers.length === 0) {
+      console.log(`No referrals found for refCode=${refCode}. Total users scanned: ${allUsers.length}`);
+    }
 
     // Map to Referral interface
     const referrals = referralUsers.map((u) => {

@@ -74,6 +74,7 @@ export async function GET(req: Request) {
         totalIncome: parseFloat(meta.total_income) || 0,
         vipLevel: parseInt(meta.vip_level) || 0,
         referredBy: meta.referred_by || '',
+        refCode: meta.ref_code || '',
         referralCode: meta.referral_code || '',
         apkClicks: clicks,
       };

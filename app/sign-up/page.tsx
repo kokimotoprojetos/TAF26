@@ -23,7 +23,7 @@ function SignUpContent() {
     setError(null);
     setSuccess(null);
 
-    const newUserRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+    const newUserRefCode = `u${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
     try {
       const { data, error: authError } = await supabase.auth.signUp({
