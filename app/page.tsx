@@ -4850,19 +4850,21 @@ export default function Taf26RendaPage() {
           })
           .catch(err => console.error("Erro ao verificar expiração do VIP:", err));
 
-        // Auto-generate referral code if missing
+        // Auto-generate referral code if missing (server-side unique)
         if (!meta.ref_code) {
-          const generatedRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
-          supabase.auth.updateUser({
-            data: {
-              ...meta,
-              ref_code: generatedRefCode
-            }
-          }).then(({ data: updateData, error }) => {
-            if (!error && updateData?.user) {
-              setUser(updateData.user);
-            }
-          });
+          fetch('/api/user/ref-code', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id }),
+          })
+            .then((r) => (r.ok ? r.json() : null))
+            .then(async (data) => {
+              if (!data?.success) return;
+              const refCode = data.refCode as string;
+              const { data: { user: refreshed } } = await supabase.auth.getUser();
+              if (refreshed) setUser(refreshed);
+            })
+            .catch((e) => console.error('Erro ao gerar ref_code:', e));
         }
       }
     };
@@ -5451,19 +5453,18 @@ export default function Taf26RendaPage() {
   const copyReferralLink = async () => {
     let refCode = user?.user_metadata?.ref_code;
     if (!refCode) {
-      // Generate and save a real ref_code before copying
-      const generatedRefCode = `user${Math.floor(1000 + Math.random() * 9000)}`;
+      // Generate and save a real unique ref_code on the server before copying
       try {
-        const meta = user?.user_metadata || {};
-        const { data: updateData, error } = await supabase.auth.updateUser({
-          data: {
-            ...meta,
-            ref_code: generatedRefCode,
-          }
+        const res = await fetch('/api/user/ref-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user?.id }),
         });
-        if (!error && updateData?.user) {
-          setUser(updateData.user);
-          refCode = generatedRefCode;
+        const data = res.ok ? await res.json() : null;
+        if (data?.success && data.refCode) {
+          refCode = data.refCode as string;
+          const { data: { user: refreshed } } = await supabase.auth.getUser();
+          if (refreshed) setUser(refreshed);
         } else {
           showToast('Erro ao gerar código de convite. Tente novamente.', 'error');
           return;
@@ -5906,6 +5907,22 @@ export default function Taf26RendaPage() {
                   </div>
                   <span className="text-xs font-semibold text-zinc-300">Convidar</span>
                 </button>
+
+                {/* Button 4: Grupo (Telegram) */}
+                <a
+                  id="action-grupo-btn"
+                  href="https://t.me/+ckjXPaHNIWk3M2Ex"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#181818] border border-[#282828] hover:border-[#0088cc]/40 rounded-2xl p-3.5 flex flex-col items-center justify-center text-center gap-1.5 transition-all active:scale-95 group"
+                >
+                  <div className="w-10 h-10 rounded-full bg-[#0088cc]/10 flex items-center justify-center text-[#29b6f6] group-hover:bg-[#0088cc] group-hover:text-white transition-all">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                  </div>
+                  <span className="text-xs font-semibold text-zinc-300">Grupo</span>
+                </a>
 
               </div>
             </div>
