@@ -4871,6 +4871,11 @@ export default function Taf26RendaPage() {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         handleUserSession(session.user);
+        // Show Telegram popup once per device
+        const dismissed = localStorage.getItem('tg_popup_dismissed');
+        if (!dismissed) {
+          setTimeout(() => setIsTelegramPopupOpen(true), 1500);
+        }
       } else {
         window.location.href = '/sign-in';
       }
@@ -4891,6 +4896,7 @@ export default function Taf26RendaPage() {
   }, []);
   const [isAppDownloaded, setIsAppDownloaded] = useState<boolean>(false);
   const [isDownloadingApp, setIsDownloadingApp] = useState<boolean>(false);
+  const [isTelegramPopupOpen, setIsTelegramPopupOpen] = useState<boolean>(false);
   
   // Navigation & Tabs
   const [activeTab, setActiveTab] = useState<'player' | 'vip' | 'history'>('player');
@@ -6966,6 +6972,91 @@ export default function Taf26RendaPage() {
         </footer>
 
       </div>
+
+      {/* --- TELEGRAM GROUP POPUP --- */}
+      <AnimatePresence>
+        {isTelegramPopupOpen && (
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-end justify-center">
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "100%", opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="w-full max-w-md bg-[#181818] border-t border-zinc-800 rounded-t-3xl overflow-hidden"
+            >
+              {/* Header gradient bar */}
+              <div className="h-1 w-full bg-gradient-to-r from-[#0088cc] via-[#29b6f6] to-[#0088cc]" />
+
+              <div className="p-6 space-y-5">
+                {/* Top row */}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* Telegram icon */}
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0088cc] to-[#29b6f6] flex items-center justify-center shadow-lg shadow-[#0088cc]/30 shrink-0">
+                      <svg viewBox="0 0 24 24" className="w-8 h-8 fill-white" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-base font-black text-white leading-tight">Grupo Oficial TAF26</h3>
+                      <p className="text-[11px] text-zinc-400 mt-0.5">Notícias, suporte e comunidade</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsTelegramPopupOpen(false)}
+                    className="text-zinc-600 hover:text-zinc-300 transition-colors p-1 cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Benefits */}
+                <div className="bg-zinc-900/60 rounded-2xl p-4 space-y-2.5">
+                  {[
+                    { emoji: '📢', text: 'Fique por dentro de todas as novidades e promoções' },
+                    { emoji: '🎁', text: 'Receba bônus e recompensas exclusivas para membros' },
+                    { emoji: '🛡️', text: 'Suporte direto e rápido da equipe TAF26' },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <span className="text-lg">{item.emoji}</span>
+                      <p className="text-xs text-zinc-300">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA Button */}
+                <a
+                  href="https://t.me/+ckjXPaHNIWk3M2Ex"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => {
+                    setIsTelegramPopupOpen(false);
+                    localStorage.setItem('tg_popup_dismissed', '1');
+                  }}
+                  className="flex items-center justify-center gap-2.5 w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#0088cc] to-[#29b6f6] text-white text-sm font-black shadow-lg shadow-[#0088cc]/25 active:scale-95 transition-all"
+                >
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                  </svg>
+                  Entrar no Grupo Agora
+                </a>
+
+                {/* Dismiss link */}
+                <button
+                  onClick={() => {
+                    setIsTelegramPopupOpen(false);
+                    localStorage.setItem('tg_popup_dismissed', '1');
+                  }}
+                  className="w-full text-center text-[11px] text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
+                >
+                  Não mostrar novamente
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
