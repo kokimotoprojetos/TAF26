@@ -5911,7 +5911,7 @@ export default function Taf26RendaPage() {
                 {/* Button 4: Grupo (Telegram) */}
                 <a
                   id="action-grupo-btn"
-                  href="https://t.me/+ckjXPaHNIWk3M2Ex"
+                  href="https://t.me/+GFsWE8g9LqI3YjIx"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-[#181818] border border-[#282828] hover:border-[#0088cc]/40 rounded-2xl p-3.5 flex flex-col items-center justify-center text-center gap-1.5 transition-all active:scale-95 group"
@@ -7043,7 +7043,7 @@ export default function Taf26RendaPage() {
 
                 {/* CTA Button */}
                 <a
-                  href="https://t.me/+ckjXPaHNIWk3M2Ex"
+                  href="https://t.me/+GFsWE8g9LqI3YjIx"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => {
