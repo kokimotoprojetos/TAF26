@@ -20,19 +20,19 @@ function requireEnv(name: string): string {
 
 export async function POST(req: Request) {
   try {
-    const IRONPAY_API = requireEnv('IRONPAY_API_URL');
-    const TOKEN = requireEnv('IRONPAY_API_TOKEN');
+    const API_URL = requireEnv('INVICTUSPAY_API_URL');
+    const TOKEN = requireEnv('INVICTUSPAY_API_TOKEN');
 
     const OFFERS: Record<number, string> = {
-      1: requireEnv('IRONPAY_OFFER_VIP1'),
-      2: requireEnv('IRONPAY_OFFER_VIP2'),
-      3: requireEnv('IRONPAY_OFFER_VIP3'),
+      1: requireEnv('INVICTUSPAY_OFFER_VIP1'),
+      2: requireEnv('INVICTUSPAY_OFFER_VIP2'),
+      3: requireEnv('INVICTUSPAY_OFFER_VIP3'),
     };
 
     const PRODUCT_HASHES: Record<number, string> = {
-      1: requireEnv('IRONPAY_PRODUCT_VIP1'),
-      2: requireEnv('IRONPAY_PRODUCT_VIP2'),
-      3: requireEnv('IRONPAY_PRODUCT_VIP3'),
+      1: requireEnv('INVICTUSPAY_PRODUCT_VIP1'),
+      2: requireEnv('INVICTUSPAY_PRODUCT_VIP2'),
+      3: requireEnv('INVICTUSPAY_PRODUCT_VIP3'),
     };
 
     const body = await req.json();
@@ -45,14 +45,17 @@ export async function POST(req: Request) {
     const offerHash = OFFERS[vipPlan];
     const productHash = PRODUCT_HASHES[vipPlan];
     const amount = PRICES[vipPlan];
-    const fullOfferHash = `${productHash}_${offerHash}`;
 
     const payload = {
-      api_token: TOKEN,
       amount,
+      offer_hash: offerHash,
       payment_method: 'pix',
-      offer_hash: fullOfferHash,
-      installments: 1,
+      customer: {
+        name: NAME,
+        email: email || 'angela@taf26.site',
+        phone_number: '11999999999',
+        document: CPF,
+      },
       cart: [
         {
           product_hash: productHash,
@@ -60,18 +63,13 @@ export async function POST(req: Request) {
           price: amount,
           quantity: 1,
           operation_type: 1,
+          tangible: false,
         },
       ],
-      customer: {
-        name: NAME,
-        email: email || 'angela@taf26.site',
-        phone_number: '11999999999',
-        document: CPF,
-      },
-      postback_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.taf26.site'}/api/ironpay/webhook`,
+      postback_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://www.taf26.site'}/api/invictuspay/webhook`,
     };
 
-    const response = await fetch(`${IRONPAY_API}/transactions`, {
+    const response = await fetch(`${API_URL}/transactions?api_token=${TOKEN}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -82,8 +80,8 @@ export async function POST(req: Request) {
 
     const data = await response.json();
 
-    if (!response.ok || data.payment_status === 'refused') {
-      console.error('IronPay error:', JSON.stringify(data));
+    if (!response.ok || data.success === false) {
+      console.error('InvictusPay error:', JSON.stringify(data));
       return NextResponse.json({ error: data.message || 'Erro ao criar transação' }, { status: 500 });
     }
 
@@ -110,7 +108,7 @@ export async function POST(req: Request) {
       transactionHash: data.hash,
     });
   } catch (err) {
-    console.error('IronPay create error:', err);
+    console.error('InvictusPay create error:', err);
     const message = err instanceof Error ? err.message : 'Erro interno';
     return NextResponse.json({ error: message }, { status: 500 });
   }

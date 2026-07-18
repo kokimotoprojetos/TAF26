@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-const IRONPAY_API = process.env.IRONPAY_API_URL || '';
-const TOKEN = process.env.IRONPAY_API_TOKEN || '';
+const API_URL = process.env.INVICTUSPAY_API_URL || '';
+const TOKEN = process.env.INVICTUSPAY_API_TOKEN || '';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,13 +11,13 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Hash da transação é obrigatório' }, { status: 400 });
   }
 
-  if (!IRONPAY_API || !TOKEN) {
-    return NextResponse.json({ error: 'IronPay não configurado. Variáveis de ambiente faltando.' }, { status: 500 });
+  if (!API_URL || !TOKEN) {
+    return NextResponse.json({ error: 'InvictusPay não configurado. Variáveis de ambiente faltando.' }, { status: 500 });
   }
 
   try {
     const response = await fetch(
-      `${IRONPAY_API}/transactions/${hash}?api_token=${TOKEN}`,
+      `${API_URL}/transactions/${hash}?api_token=${TOKEN}`,
       {
         headers: { 'Accept': 'application/json' },
       }
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (!response.ok || data.success === false) {
       return NextResponse.json({ error: 'Erro ao consultar transação' }, { status: 500 });
     }
 

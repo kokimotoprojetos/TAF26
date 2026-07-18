@@ -4948,7 +4948,7 @@ export default function Taf26RendaPage() {
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
-  // IronPay VIP Purchase State
+  // InvictusPay VIP Purchase State
   const [isVipPaymentOpen, setIsVipPaymentOpen] = useState(false);
   const [vipPaymentData, setVipPaymentData] = useState<{
     plan: VIPPlan;
@@ -5484,7 +5484,7 @@ export default function Taf26RendaPage() {
     });
   };
 
-  // Handle VIP Boost Purchase via IronPay (QR code)
+  // Handle VIP Boost Purchase via InvictusPay (QR code)
   const handleBuyVIP = async (plan: VIPPlan) => {
     if (vipLevel >= plan.id) {
       showToast('Você já possui este plano VIP ou um superior ativo!', 'info');
@@ -5501,7 +5501,7 @@ export default function Taf26RendaPage() {
     setIsVipPaymentOpen(true);
 
     try {
-      const res = await fetch('/api/ironpay/create', {
+      const res = await fetch('/api/invictuspay/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -5529,7 +5529,7 @@ export default function Taf26RendaPage() {
 
       const interval = setInterval(async () => {
         try {
-          const checkRes = await fetch(`/api/ironpay/check?hash=${txHash}`);
+          const checkRes = await fetch(`/api/invictuspay/check?hash=${txHash}`);
           const checkData = await checkRes.json();
           if (checkData.success && checkData.status === 'paid') {
             clearInterval(interval);
@@ -6810,7 +6810,7 @@ export default function Taf26RendaPage() {
           )}
         </AnimatePresence>
 
-        {/* --- VIP PAYMENT MODAL (IronPay PIX QR Code) --- */}
+        {/* --- VIP PAYMENT MODAL (InvictusPay PIX QR Code) --- */}
         <AnimatePresence>
           {isVipPaymentOpen && vipPaymentData && (
             <div className="absolute inset-0 bg-black/80 backdrop-blur-xs z-50 flex items-end justify-center">

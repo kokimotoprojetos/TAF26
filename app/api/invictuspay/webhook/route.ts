@@ -9,25 +9,38 @@ export async function POST(req: Request) {
   try {
     const data = await req.json();
 
-    console.log('IronPay webhook received:', JSON.stringify(data, null, 2));
+    console.log('InvictusPay webhook received:', JSON.stringify(data, null, 2));
 
-    if (data.event !== 'transaction' || data.payment_status !== 'paid') {
+    if (data.status !== 'paid') {
       return NextResponse.json({ received: true });
     }
 
-    const transactionHash = data.hash;
-    const customerEmail = data.customer?.email;
-    const customerName = data.customer?.name;
-    const offerTitle = data.offer?.title || '';
+    const transactionHash = data.transaction_hash;
     const amount = data.amount || 0;
 
     let vipLevel = 0;
-    if (offerTitle.includes('VIP 3') || offerTitle.includes('Diamond') || amount >= 15000) {
+    if (amount >= 15000) {
       vipLevel = 3;
-    } else if (offerTitle.includes('VIP 2') || offerTitle.includes('Gold') || amount >= 6000) {
+    } else if (amount >= 6000) {
       vipLevel = 2;
-    } else if (offerTitle.includes('VIP 1') || offerTitle.includes('Bronze') || amount >= 2500) {
+    } else if (amount >= 2500) {
       vipLevel = 1;
+    }
+
+    let customerEmail = null;
+    if (transactionHash && process.env.INVICTUSPAY_API_URL && process.env.INVICTUSPAY_API_TOKEN) {
+      try {
+        const txResponse = await fetch(
+          `${process.env.INVICTUSPAY_API_URL}/transactions/${transactionHash}?api_token=${process.env.INVICTUSPAY_API_TOKEN}`,
+          { headers: { 'Accept': 'application/json' } }
+        );
+        const txData = await txResponse.json();
+        if (txData.success && txData.data?.customer?.email) {
+          customerEmail = txData.data.customer.email;
+        }
+      } catch (e) {
+        console.error('Error fetching transaction details:', e);
+      }
     }
 
     if (!supabaseAdmin) {
