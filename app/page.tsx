@@ -26,11 +26,13 @@ import {
   X,
   Sparkles,
   Zap,
+  Gift,
   Loader2,
   LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
+import confetti from 'canvas-confetti';
 import { supabase } from '@/lib/supabase';
 
 // Interfaces
@@ -4899,6 +4901,85 @@ export default function Taf26RendaPage() {
   const [isAppDownloaded, setIsAppDownloaded] = useState<boolean>(false);
   const [isDownloadingApp, setIsDownloadingApp] = useState<boolean>(false);
   const [isTelegramPopupOpen, setIsTelegramPopupOpen] = useState<boolean>(false);
+
+  // --- MEGA BÔNUS POPUP STATE ---
+  const [isMegaBonusPopupOpen, setIsMegaBonusPopupOpen] = useState<boolean>(false);
+  const [megaBonusTimeLeft, setMegaBonusTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({ days: 3, hours: 0, minutes: 0, seconds: 0 });
+
+  const triggerMegaBonusConfetti = () => {
+    if (typeof window === 'undefined') return;
+    try {
+      confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#FFD700', '#FFA500', '#10B981', '#EC4899', '#3B82F6']
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: ['#FFD700', '#F59E0B', '#10B981']
+        });
+      }, 250);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: ['#FFD700', '#F59E0B', '#10B981']
+        });
+      }, 400);
+    } catch (e) {
+      console.error('Confetti error:', e);
+    }
+  };
+
+  // Mega Bonus 3-day countdown & auto popup effect
+  useEffect(() => {
+    if (!user) return;
+
+    let startTimeStr = localStorage.getItem('mega_bonus_start_time');
+    let startTime = startTimeStr ? parseInt(startTimeStr, 10) : NaN;
+    if (isNaN(startTime)) {
+      startTime = Date.now();
+      localStorage.setItem('mega_bonus_start_time', startTime.toString());
+    }
+
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+    const endTime = startTime + THREE_DAYS_MS;
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, endTime - now);
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setMegaBonusTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+
+    // Show popup & confetti when user logs in
+    const popupTimer = setTimeout(() => {
+      setIsMegaBonusPopupOpen(true);
+      triggerMegaBonusConfetti();
+    }, 600);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(popupTimer);
+    };
+  }, [user]);
   
   // Navigation & Tabs
   const [activeTab, setActiveTab] = useState<'player' | 'vip' | 'history'>('player');
@@ -5925,6 +6006,36 @@ export default function Taf26RendaPage() {
                 </a>
 
               </div>
+            </div>
+
+            {/* --- MEGA BÔNUS PROMO BANNER --- */}
+            <div className="px-4 mt-3">
+              <button
+                onClick={() => {
+                  setIsMegaBonusPopupOpen(true);
+                  triggerMegaBonusConfetti();
+                }}
+                className="w-full bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-emerald-500/20 border border-amber-500/40 rounded-2xl p-3.5 flex items-center justify-between shadow-lg hover:border-amber-400 transition-all text-left group cursor-pointer relative overflow-hidden"
+              >
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-black flex items-center justify-center shrink-0 shadow-md animate-bounce">
+                    <Gift className="w-5 h-5 fill-current" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-black text-amber-400 uppercase tracking-wider">🎉 Mega Bônus R$ 100,00</span>
+                      <span className="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded border border-amber-500/30">
+                        {String(megaBonusTimeLeft.days)}d {String(megaBonusTimeLeft.hours).padStart(2, '0')}h {String(megaBonusTimeLeft.minutes).padStart(2, '0')}m
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-zinc-300 font-medium">Assine VIP e receba R$ 100,00 na hora!</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-amber-400 font-bold text-xs shrink-0 relative z-10">
+                  <span>Ver</span>
+                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
             </div>
 
             {/* --- THREE MAIN TAB SELECTORS (Recreates Starbucks "Fixed Fund", "Welfare Fund", "Yearly Fund") --- */}
@@ -6989,6 +7100,139 @@ export default function Taf26RendaPage() {
         </footer>
 
       </div>
+
+      {/* --- MEGA BÔNUS POPUP MODAL --- */}
+      <AnimatePresence>
+        {isMegaBonusPopupOpen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 22, stiffness: 280 }}
+              className="w-full max-w-md bg-gradient-to-b from-[#1c1a10] via-[#141414] to-[#0d0d0d] border-2 border-amber-500/50 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(245,158,11,0.25)] relative"
+            >
+              {/* Glowing aura */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-amber-500/20 rounded-full blur-3xl pointer-events-none animate-pulse" />
+
+              {/* Close Button */}
+              <button
+                onClick={() => setIsMegaBonusPopupOpen(false)}
+                className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-zinc-800/80 border border-zinc-700/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="p-6 text-center space-y-4 relative z-10">
+                {/* Header Badge */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 via-yellow-500/30 to-amber-500/20 border border-amber-500/50 text-amber-400 text-xs font-black tracking-wide uppercase shadow-lg shadow-amber-500/10">
+                  <Gift className="w-4 h-4 text-amber-400 animate-bounce" />
+                  <span>🎉 PARABÉNS! VOCÊ FOI SORTEADO!</span>
+                </div>
+
+                {/* Title */}
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 drop-shadow-md">
+                    MEGA BÔNUS
+                  </h2>
+                  <div className="text-4xl font-extrabold text-emerald-400 mt-1 flex items-center justify-center gap-1">
+                    <span>+ R$ 100,00</span>
+                  </div>
+                  <p className="text-xs text-zinc-400 mt-1 font-medium">
+                    Bônus exclusivo concedido à sua conta hoje!
+                  </p>
+                </div>
+
+                {/* 3-Day Live Countdown Box */}
+                <div className="bg-gradient-to-br from-amber-950/40 via-zinc-900 to-zinc-900 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-400 uppercase tracking-wider">
+                    <Clock className="w-3.5 h-3.5 text-amber-400 animate-spin" style={{ animationDuration: '4s' }} />
+                    <span>OFERTA VÁLIDA POR TEMPO LIMITADO</span>
+                  </div>
+
+                  {/* Countdown Grid */}
+                  <div className="grid grid-cols-4 gap-2 pt-1">
+                    <div className="bg-black/60 border border-amber-500/20 rounded-xl py-2 px-1">
+                      <span className="text-lg font-black text-amber-300 block leading-none">
+                        {String(megaBonusTimeLeft.days).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Dias</span>
+                    </div>
+                    <div className="bg-black/60 border border-amber-500/20 rounded-xl py-2 px-1">
+                      <span className="text-lg font-black text-amber-300 block leading-none">
+                        {String(megaBonusTimeLeft.hours).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Horas</span>
+                    </div>
+                    <div className="bg-black/60 border border-amber-500/20 rounded-xl py-2 px-1">
+                      <span className="text-lg font-black text-amber-300 block leading-none">
+                        {String(megaBonusTimeLeft.minutes).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Min</span>
+                    </div>
+                    <div className="bg-black/60 border border-amber-500/20 rounded-xl py-2 px-1">
+                      <span className="text-lg font-black text-amber-300 block leading-none">
+                        {String(megaBonusTimeLeft.seconds).padStart(2, '0')}
+                      </span>
+                      <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider">Seg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Details Card */}
+                <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 text-left space-y-2.5">
+                  <p className="text-xs text-zinc-300 leading-relaxed font-normal">
+                    Assine qualquer <strong className="text-amber-400 font-bold">Plano VIP</strong> agora para ativar a sua conta e receba imediatamente <strong className="text-emerald-400 font-extrabold">R$ 100,00</strong> em dinheiro direto no seu saldo!
+                  </p>
+
+                  <div className="space-y-1.5 pt-1 text-xs">
+                    <div className="flex items-center gap-2 text-zinc-200">
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                      </div>
+                      <span>Bônus de <strong>R$ 100,00</strong> creditado na hora</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-zinc-200">
+                      <div className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <Zap className="w-3.5 h-3.5" />
+                      </div>
+                      <span>Multiplique seus ganhos por música em até <strong>10x</strong></span>
+                    </div>
+                    <div className="flex items-center gap-2 text-zinc-200">
+                      <div className="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                      </div>
+                      <span>Saques PIX imediatos e sem limites diários</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Primary CTA Button */}
+                <button
+                  onClick={() => {
+                    setIsMegaBonusPopupOpen(false);
+                    setActiveTab('vip');
+                    triggerMegaBonusConfetti();
+                  }}
+                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-emerald-400 text-black text-sm font-black uppercase tracking-wide shadow-xl shadow-amber-500/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <Sparkles className="w-5 h-5 fill-current animate-pulse" />
+                  <span>RESGATAR MEGA BÔNUS AGORA</span>
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* Dismiss */}
+                <button
+                  onClick={() => setIsMegaBonusPopupOpen(false)}
+                  className="text-[11px] text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer block mx-auto"
+                >
+                  Lembrar mais tarde
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* --- TELEGRAM GROUP POPUP --- */}
       <AnimatePresence>
