@@ -7228,7 +7228,6 @@ export default function Taf26RendaPage() {
                   }}
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-400 to-emerald-400 text-black text-sm font-black uppercase tracking-wide shadow-xl shadow-amber-500/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
                 >
-                  <Sparkles className="w-5 h-5 fill-current animate-pulse" />
                   <span>RESGATAR MEGA BÔNUS AGORA</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
