@@ -32,7 +32,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
-import confetti from 'canvas-confetti';
 import { supabase } from '@/lib/supabase';
 
 // Interfaces
@@ -4918,9 +4917,10 @@ export default function Taf26RendaPage() {
   const [isMegaBonusPopupOpen, setIsMegaBonusPopupOpen] = useState<boolean>(false);
   const [megaBonusTimeLeft, setMegaBonusTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number }>({ days: 3, hours: 0, minutes: 0, seconds: 0 });
 
-  const triggerMegaBonusConfetti = () => {
+  const triggerMegaBonusConfetti = async () => {
     if (typeof window === 'undefined') return;
     try {
+      const confetti = (await import('canvas-confetti')).default;
       confetti({
         particleCount: 120,
         spread: 70,
