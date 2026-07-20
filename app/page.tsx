@@ -4872,18 +4872,30 @@ export default function Taf26RendaPage() {
     };
 
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        handleUserSession(session.user);
-        // Show Telegram popup once per device
-        const dismissed = localStorage.getItem('tg_popup_dismissed');
-        if (!dismissed) {
-          setTimeout(() => setIsTelegramPopupOpen(true), 1500);
+      // Safety timeout to ensure loading spinner never hangs indefinitely
+      const safetyTimeout = setTimeout(() => {
+        setIsUserLoading(false);
+      }, 2500);
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          handleUserSession(session.user);
+          // Show Telegram popup once per device
+          const dismissed = localStorage.getItem('tg_popup_dismissed');
+          if (!dismissed) {
+            setTimeout(() => setIsTelegramPopupOpen(true), 1500);
+          }
+        } else {
+          window.location.href = '/sign-in';
         }
-      } else {
+      } catch (err) {
+        console.error('Error fetching auth session:', err);
         window.location.href = '/sign-in';
+      } finally {
+        clearTimeout(safetyTimeout);
+        setIsUserLoading(false);
       }
-      setIsUserLoading(false);
     };
 
     getSession();
