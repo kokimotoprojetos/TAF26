@@ -7130,7 +7130,7 @@ export default function Taf26RendaPage() {
               {/* Close Button */}
               <button
                 onClick={() => setIsMegaBonusPopupOpen(false)}
-                className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-zinc-800/80 border border-zinc-700/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-zinc-800/80 border border-zinc-700/80 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
