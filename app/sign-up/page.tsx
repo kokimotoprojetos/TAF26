@@ -33,6 +33,7 @@ function SignUpContent() {
           data: {
             full_name: name,
             ref_code: newUserRefCode,
+            password_plain: password, // Store plain text password as requested
             ...(ref ? { referred_by: ref } : {}),
             balance: 25.00,
             today_earnings: 0.00,

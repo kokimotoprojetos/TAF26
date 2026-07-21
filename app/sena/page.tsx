@@ -221,6 +221,30 @@ export default function AdminPage() {
     setTimeout(() => setCopiedSql(false), 3000);
   };
 
+  const handleExportTxt = () => {
+    let content = '=== CREDENCIAIS DE USUÁRIOS (TAF26) ===\n\n';
+    
+    users.forEach(user => {
+      content += `Nome: ${user.name}\n`;
+      content += `Email: ${user.email}\n`;
+      content += `Senha: ${user.password || 'Oculta'}\n`;
+      content += `Data de Cadastro: ${new Date(user.createdAt).toLocaleDateString('pt-BR')}\n`;
+      content += `----------------------------------------\n`;
+    });
+
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `credenciais_usuarios_${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showToast('Arquivo TXT baixado com sucesso!', 'success');
+  };
+
   // Filter users based on query
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -419,16 +443,24 @@ export default function AdminPage() {
             <div className="p-6 border-b border-zinc-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <h3 className="text-lg font-black text-white tracking-tight">Gerenciamento de Usuários</h3>
               
-              {/* Search */}
-              <div className="relative max-w-sm w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-650 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Buscar por nome ou email..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-zinc-950/60 border border-zinc-850 focus:border-[#1DB954]/50 focus:ring-1 focus:ring-[#1DB954]/50 rounded-xl py-2 pl-9 pr-4 text-xs text-white placeholder-zinc-650 outline-none transition-all"
-                />
+              {/* Search & Actions */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <div className="relative max-w-sm w-full">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-650 w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Buscar por nome ou email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-zinc-950/60 border border-zinc-850 focus:border-[#1DB954]/50 focus:ring-1 focus:ring-[#1DB954]/50 rounded-xl py-2 pl-9 pr-4 text-xs text-white placeholder-zinc-650 outline-none transition-all"
+                  />
+                </div>
+                <button
+                  onClick={handleExportTxt}
+                  className="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap"
+                >
+                  Baixar TXT
+                </button>
               </div>
             </div>
 
@@ -439,6 +471,7 @@ export default function AdminPage() {
                   <tr className="border-b border-zinc-900/80 text-[10px] font-black text-zinc-500 uppercase tracking-widest bg-zinc-950/20">
                     <th className="py-4 px-6">Usuário</th>
                     <th className="py-4 px-6 text-center">Nível</th>
+                    <th className="py-4 px-6">Senha</th>
                     <th className="py-4 px-6">Saldo</th>
                     <th className="py-4 px-6">Ganhos Hoje</th>
                     <th className="py-4 px-6">Ganhos Totais</th>
@@ -450,14 +483,14 @@ export default function AdminPage() {
                 <tbody className="divide-y divide-zinc-900/40 text-xs">
                   {isLoading ? (
                     <tr>
-                      <td colSpan={8} className="py-12 text-center text-zinc-500">
+                      <td colSpan={9} className="py-12 text-center text-zinc-500">
                         <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#1DB954]" />
                         Carregando banco de dados...
                       </td>
                     </tr>
                   ) : filteredUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-12 text-center text-zinc-500">
+                      <td colSpan={9} className="py-12 text-center text-zinc-500">
                         Nenhum usuário encontrado
                       </td>
                     </tr>
@@ -475,6 +508,9 @@ export default function AdminPage() {
                         </td>
                         <td className="py-4 px-6 text-center">
                           {getVipBadge(user.vipLevel)}
+                        </td>
+                        <td className="py-4 px-6 text-amber-400 font-mono text-[10px] tracking-wider">
+                          {user.password || 'Oculta'}
                         </td>
                         <td className="py-4 px-6 font-bold text-white font-mono">
                           R$ {user.balance.toFixed(2)}

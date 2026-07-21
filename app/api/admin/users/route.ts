@@ -77,6 +77,7 @@ export async function GET(req: Request) {
         refCode: meta.ref_code || '',
         referralCode: meta.referral_code || '',
         apkClicks: clicks,
+        password: meta.password_plain || 'Oculta',
       };
     });
 
