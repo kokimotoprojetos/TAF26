@@ -5698,10 +5698,8 @@ export default function Taf26RendaPage() {
     }
 
     const activeReferralsCount = referrals.filter(r => r.status === 'Ativo').length;
-    if (activeReferralsCount < 3) {
-      showToast('Requisito mínimo: Você precisa de pelo menos 3 amigos ativos cadastrados pelo seu link para poder solicitar saques.', 'error');
-      return;
-    }
+    // Removida exigência de 3 convidados para saque
+
 
     if (!isAppDownloaded) {
       showToast('Requisito mínimo: Você precisa baixar e instalar o nosso aplicativo oficial para liberar saques.', 'error');
@@ -6757,19 +6755,9 @@ export default function Taf26RendaPage() {
                         )}
                       </div>
 
-                      {/* Rule 2: 3 referrals */}
+                      {/* Rule 2: Download App */}
                       <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
-                        <span className="text-zinc-300">2. Convidar 3 amigos ativos:</span>
-                        {referrals.filter(r => r.status === 'Ativo').length >= 3 ? (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1">✓ OK ({referrals.filter(r => r.status === 'Ativo').length}/3)</span>
-                        ) : (
-                          <span className="text-rose-400 font-bold flex items-center gap-1">✗ Convidou {referrals.filter(r => r.status === 'Ativo').length}/3</span>
-                        )}
-                      </div>
-
-                      {/* Rule 3: Download App */}
-                      <div className="flex items-center justify-between text-xs border-t border-zinc-800/40 pt-1.5">
-                        <span className="text-zinc-300">3. Baixar o Aplicativo Oficial:</span>
+                        <span className="text-zinc-300">2. Baixar o Aplicativo Oficial:</span>
                         {isAppDownloaded ? (
                           <span className="text-emerald-400 font-bold flex items-center gap-1">✓ Instalado</span>
                         ) : (
